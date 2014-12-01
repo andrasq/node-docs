@@ -5,20 +5,15 @@ Given how ubiquitous logging is, it's surprising how hard it is to find
 a good logger.
 
 This is what I was looking for:
-
 - simple -- simple to overview, to understand, to use
-
 - very fast -- if I need to consider the overhead added by the logging
   facility, it's of limited use.  I want to be able to log high volume
   data, not just human oriented messages.
-
 - configurable -- I want to tailor it to my use cases, not always use a
   canned built-in default
-
 - versatile -- I should not have to give up on functionality for speed.
   Sometimes I want just speed, sometimes I'm willing to take a hit for
   functionality.
-
 - Did I mention simple?  I don't want to have to master internal apis,
   templating languages, and module hierarchies to use a logger.
 
