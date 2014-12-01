@@ -1,15 +1,15 @@
-On the Difference Between `nextTick()` and `setImmediate()`
-===========================================================
+On the Difference Between nextTick() and setImmediate()
+=======================================================
 
 2014-11-05 - AR.
 
-setImmediate() appends a continuation (function) to the event queue,
+`setImmediate()` appends a continuable (function) to the event queue,
 which will run when the event loop gets to it.  This is a normal
-continuation, it waits its turn and incurs the event loop scheduling
+continuable, it waits its turn and incurs the event loop scheduling
 overhead (setImmediate is much slower than nextTick).
 
-nextTick() arranges for the continuation (function) to be called as soon
-as the current continuation finishes, before the event loop scheduler
+`process.nextTick()` arranges for the continuable (function) to be called as soon
+as the current continuable finishes, before the event loop scheduler
 runs.  nextTick is just a delayed function call, it is not queued and
 scheduled.  nextTick functions are blocking (they do not allow others to
 run first), and recursive calls to nextTick will exhaust the call stack
@@ -25,18 +25,22 @@ much faster than setImmediate.
   v0.s 650k / sec.  This is on physical hardware; s run at half to a
   quarter this speed.
 
-- setImmediate of a function (ie, setImmediate(func)) is slower than
-  setImmediate( function(){ func()) } ).  This was surprising.  May be
-  related to scoping (global vs local) or the way the closure is built.
+- setImmediate of a function (ie, `setImmediate(func)`) is slower than
+  that of an inline function `setImmediate( function(){ func()) } )`.  This
+  was surprising.  May be related to scoping (global vs local) or the way the
+  closure is built.
 
-- passing a function argument to setImmediate (ie, setImmediate(func,
-  arg)) is much much slower (10x in v0.10, 650k/s vs 67k/s) than writing
-  an in-line closure to invoke func(arg).  Node v0.11 4x, but s not an
-  improvement but a drop in the peak (to 377k/s, vs 100k/s).  Though
-  v0.11 is less bad than v0.10 at queueing arguments, it is still much
-  faster to use in-lines.
+- on the same topic, inline functions and objects are very very fast in
+  nodejs, and can be used without thought to overhead.
 
-- node v0.11 (v0.11.13) is much slower at invoking queued continuations
+- passing a function argument to setImmediate (ie, setImmediate(func, arg))
+  is much much slower (10x in v0.10, 650k/s vs 67k/s) than writing an
+  in-line closure to invoke func(arg).  Node v0.11 narrows the gap to 4x,
+  but that's not an improvement but rather a drop in the peak (to 377k/s, vs
+  100k/s).  Though v0.11 is less bad than v0.10 at queueing arguments, it is
+  still much faster to use in-lines.
+
+- node v0.11 (v0.11.13) is much slower at invoking queued continuables
   than v0.10 was (v0.10 was 650k/sec, down to 377k/sec v0.11)
 
 
