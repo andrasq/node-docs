@@ -34,13 +34,13 @@ much faster than setImmediate.
   nodejs, and can be used without thought to overhead.
 
 - passing a function argument to setImmediate (ie, setImmediate(func, arg))
-  is much much slower (10x in v0.10, 650k/s vs 67k/s) than writing an
-  in-line closure to invoke func(arg).  Node v0.11 narrows the gap to 4x,
-  but that's not an improvement but rather a drop in the peak (to 377k/s, vs
-  100k/s).  Though v0.11 is less bad than v0.10 at queueing arguments, it is
-  still much faster to use in-lines.
+  is much much slower than writing an in-line closure to invoke func(arg)
+  (10x in v0.10, 650k/s inline, 67k/s w/ arg).  Node v0.11 narrows the gap
+  to 4x, but that's not an improvement but rather a drop in the peak (377k/s
+  inline, 100k/s w/ arg).  Though v0.11 is less bad than v0.10 at queueing
+  arguments, it is still much faster to use in-lines.
 
-- node v0.11 (v0.11.13) is much slower at invoking queued continuables
+- node v0.11 (v0.11.13) is much slower at queueing and invoking continuables
   than v0.10 was (v0.10 was 650k/sec, down to 377k/sec v0.11)
 
 
