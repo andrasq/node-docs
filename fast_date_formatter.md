@@ -248,7 +248,7 @@ stack.  A linear search with explicit comparisons runs very fast in nodejs.
             return false;
         };
 
-For back-to-back calls, this runs at 10m calls / sec.
+For back-to-back calls, this runs at 12m calls / sec.
 
 If the cache does not capture any repeats (ie, every call uses a different
 timestamp), the added overhead of managing the cache lowers throughput from
