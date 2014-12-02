@@ -1,8 +1,11 @@
 How To Build A Better Logger
 ============================
+Logging as an Extremely High Throughput Data Streaming Service
+
+2014-11-25 - AR.
 
 Given how ubiquitous logging is, it's surprising how hard it is to find
-a good logger.
+a good one.
 
 This is what I was looking for:
 - simple -- simple to overview, to understand, to use
@@ -27,15 +30,44 @@ blocks.
 
 Call me picky, but I ended up writing my own.
 
+
+On Logging
+----------
+
+Logging is more than sending messages to humans.  Logging is also journaling
+information, checkpointing data, delivering results, or bulk data transport.
+Logging that delivers messages is nice, but logging that is an extremely high
+throughput data streaming service opens up worlds of possibilities.
+
+Logfiles must support multiple concurrent writers and readers.  This means
+file writes must take care to prevent data corruption (interleaving of data),
+and writes must append complete lines to the logfile to not make readers see
+any corrupted data (I use an flock(LOCK_EX) during writes).
+
+Logfiles must support external logfile management.  Logfiles may be consumed
+(or archived) at arbitrary times and intervals, so loggers must frequently
+check and/or reopen the file they are writing to ensure that they switch to
+using the current one.  Logfile consumers need to rename the file then wait
+for writes to settle before removing or altering the contents.  To avoid
+introducing overlong latencies into the consumers (settle wait time), the
+reopen interval should be less than a second (I tend to use .05 sec).
+
+Finally, attention should be paid to the data format.  It should be easy to
+work with, fast, convenient, well supported, and interoperable.  I like
+newline terminated plaintext, which is all of the above.  It also has the
+widest assortment of very efficient tools to process it, in both small and
+large quantities.  In particular, applying existing system utilities to chunk,
+search, sort and transport the data is a huge win.
+
+
 The Logger
 ----------
 
-A logger is simple.  Basically, it accepts an input message, formats a
-log line (filters the message), and writes it.  The actual log line
-format and the actual writing vary, so those should be pluggable.  No
-need to disallow multiple filters, just run them in the order added.
-That gives us the base class and two methods, `addFilter()` and
-`addWriter()`.
+A logger is simple.  It accepts an input message, formats a log line, and
+writes it.  The actual log line format and the actual writing vary, so those
+filters to apply formats and writers to write should be pluggable.  No need to
+disallow multiple filters, just run them in the order added.  That gives us
+the base class and two methods, `addFilter()` and `addWriter()`.
 
 The messages can be of differing degrees of severity, from debugging
 tracers to critical alerts, but basically three types: debugging aids,
@@ -52,7 +84,7 @@ level)`.
 
 For sanity's sake, the logger itself should ensure that all logged lines
 are terminated by a newline character.  This also allows the log output
-to be fed to other tools that process newline delimited text data, which
+to be fed to other tools that process newline terminated text, which
 on Unix systems is the simplest, fastest and most universal form of data
 exchange.
 
@@ -73,7 +105,9 @@ debug, info, error:
             logit(message, loglevelValue)
         )
 
+
 Filters
+-------
 
 The simplest log line format is just the severity (the loglevel) and a
 timestamp.  I like the timestamp at the front, it makes it easy to find
@@ -101,7 +135,20 @@ readable log lines, a numeric timestamp is fine:
 
 Date.now() in nodejs is fast enough to not benefit from caching.  The
 bottleneck is JSON.stringify itself, which can't easily be worked around
-if we want to support UTF8 strings and/or logging objects.
+if we want to support UTF8 strings and/or log objects.
+
+
+Writers
+-------
+
+A writers is an object with a write method taking a string and a callback.  A
+writer is free to buffer and combine writes for efficiency, so the callback
+does not ensure that the bits have hit the disk, only that it has been
+accepted.  Process.stdout or fs.createWriteStream() or a network socket could
+be writers, or the fast (and reliable and mutexed) QFputs write combining text
+streamer.  Other, non-streaming writers can also be useful, eg sending
+datagrams or writing to syslog, all with the same interface.
+
 
 And there it is -- fast, configurable, versatile, simple.
 
