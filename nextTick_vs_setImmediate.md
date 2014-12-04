@@ -39,7 +39,9 @@ much faster than setImmediate (7.5m/s v0.10.29; 2.5m/s v0.11.13).
   (10x in v0.10, 650k/s inline, 67k/s w/ arg).  Node v0.11 narrows the gap
   to 4x, but that's not an improvement but rather a drop in the peak (377k/s
   inline, 100k/s w/ arg).  Though v0.11 is less bad than v0.10 at queueing
-  arguments, it is still much faster to use in-lines.
+  arguments, it is still much faster to use in-lines.  The reason is that
+  internally in `timer.js` arguments are handled with array slice and
+  `func.apply()`, which are slow compared to `func()`.
 
 - node v0.11 (v0.11.13) is much slower at queueing and invoking continuables
   than v0.10 was (v0.10 was 650k/sec, down to 377k/sec v0.11)
