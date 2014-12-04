@@ -7,7 +7,7 @@ Say you wanted to format dates like php does, with a function `phpdate(format,
 timestamp)`.  How could it be made efficient and run really fast?
 
 We'll look at a possible implementation and some optimizations to make it 3x,
-5x and 15x faster.
+5x and 20x faster.
 
 Phpdate
 -------
@@ -255,16 +255,16 @@ timestamp), the added overhead of managing the cache lowers throughput from
 1920k/s down to 1540k/s.
 
 This is the largest single speedup, but is also the hardest tradeoff to
-justify -- a steady 2-2.8m/s, or 1.5m/s with bursts of up to 10m/s.  Depends
-on the expected usage patterns; some will win big, others lose.  Or it could
-be made configurable, with result caching enabled/disabled at load time or run
+justify -- a steady 2-2.8m/s, or 1.5m/s with bursts of up to 12m/s.  Depends
+on the expected usage patterns; some will win, others lose.  Or it could be
+made configurable, with result caching enabled/disabled at load time or run
 time.
 
 
 Conclusions
 -----------
 
-The results speak for themselves -- faster by an order in magnitude (18x) in
+The results speak for themselves -- faster by an order in magnitude (21x) in
 bursts, 5x faster in the expected case, 3x faster in the worst case.
 
 We didn't address padding (date should show '01' not '1'), leap days,
