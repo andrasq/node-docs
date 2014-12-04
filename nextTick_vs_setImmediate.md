@@ -6,7 +6,8 @@ On the Difference Between nextTick() and setImmediate()
 `setImmediate()` appends a continuable (function) to the event queue,
 which will run when the event loop gets to it.  This is a normal
 continuable, it waits its turn and incurs the event loop scheduling
-overhead (setImmediate is much slower than nextTick).
+overhead (setImmediate is much slower than nextTick:  700k/s v0.10.29,
+400k/s v0.11.13).
 
 `process.nextTick()` arranges for the continuable (function) to be called as soon
 as the current continuable finishes, before the event loop scheduler
@@ -14,7 +15,7 @@ runs.  nextTick is just a delayed function call, it is not queued and
 scheduled.  nextTick functions are blocking (they do not allow others to
 run first), and recursive calls to nextTick will exhaust the call stack
 and crash.  However, nextTick bypasses the event loop overhead, and is
-much faster than setImmediate.
+much faster than setImmediate (7.5m/s v0.10.29; 2.5m/s v0.11.13).
 
 
 ### On the Speed of Node Continuations
