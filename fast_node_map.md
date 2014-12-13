@@ -38,6 +38,7 @@ Map implemented with a native nodejs hash:
 - insert/dele pairs, 100k:  (1m: 2.3m/s)
 - inserts only, 100k: 25m / s (1m: 13m/s)
 - deletes only, 100k: 1.095 sec 100k/s, ms (1m: 664.5 sec, 150/s)
+- 10-item "ripple" on top of 1k stored: 1.1m/s
 
 Yikes!  We can insert 1 million items into a nodejs hash in 1 second, but
 deleting them back-to-back takes over 10 minutes!?  That's 100,000 times
@@ -174,30 +175,59 @@ repacking.  We need a better heuristic.
 It's worth noting that lots of keys are ok; what we don't want is lots of
 holes.  Keys are essential; holes are just wasted memory.  So our heuristic
 should track the count of holes (deletions), and if too many holes reclaim
-space in bunches.
+space in bunches to avoid repacking too often.
 
-Also, not only should we avoid repacking too often, we need to avoid the
-overhead of _checking whether to_ too often.  So the heuristic should track
-when the last check was made, to not check again too soon.
+We also need to avoid the overhead of checking _whether to_ repack too often.
+So the heuristic should track when the last check was made, to not check too
+soon.
 
-...
+        // on delete
+        this.deleteCount += 1;
+        this.nextRepackCheck -= 1;
+        if (!this.nextRepackCheck) {
+            if (this.deleteCount > 40000) {
+                // repack
+            }
+            this.nextRepackCheck = 25000;
+        }
 
 ## Fix to the repack: avoid blocking
 
 Repacking runs uninterrupted, it does not yield.  Copying 2 million live keys
-takes .3 seconds, which is a long time to block other threads.  We can't
-really help this, the best we can do is avoid repacking while there are "too
-many" keys live in the hash.
+takes .3 seconds, which is a long time to block other threads.  Repacking is
+the transcribing of properties from one object to another, so it is not really
+fixable; the best we can do is avoid repacking while there are "too many" keys
+live in the hash.
 
-This means a further modification to the repack heuristic and tracking the
-could of live items in the hash.  If we do not want repack to block longer
-than 1-2ms, the number of live items should not be more than 10,000.
+This means a further modification to the repack heuristic to track the count
+of live items in the hash.  If we do not want repack to block longer than
+1-2ms, the number of live items should not be more than 10,000.
 
 The number of live items can not be known precisely without enumerating the
-hash (slow).  However, we can track insertions and deletions, and if they are
-"well-behaved" (at most one deletion per insertion), the difference between
-insertion and deletion counts roughly correspond to the live key count.
+hash (slow).  However, we can track insertions and deletions, and for many use
+cases the difference between insertions and deletions will roughly correspond
+to the number of live keys.
 
+        if (!this.nextRepackCheck) {
+            if (this.deleteCount > 40000 && this.insertCount - this.deleteCount < 10000) {
+                // repack
+            }
+            this.nextRepackCheck = 25000;
+        }
+
+No heuristic selected will work for all cases, and so must be picked with an
+intended application in mind.  Our goal was for a short- and long-term value
+store which
+
+- values inserted once, read repeatedly over a period of time, then deleted
+- the inserted value would never be falsy (ie, would be an object or array)
+- only one insertion per key, no key reuse to modify the stored value
+- although not the primary use case, key reuse should work as expected
+- the number of values stored could range from dozens to possibly millions
+- insertion/deletion activity could come in uneven "ripples" on top of a large
+  number of stored items
+- the insertion keys used would be proportional to time, with a limit of 1000
+  per second of runtime.  Ie, space consumption would be bounded.
 
 ## Final Notes
 
@@ -233,16 +263,13 @@ Putting it all together, we get something like:
             this.nextRepackCheck--;
 
             // if hash has too many holes, repack it now to free space
+            // only repack when fewer than 10k live items remain, else we block too long
             if (!this.nextRepackCheck) {
-                // only repack when fewer than 10k live items remain, else we block too long
-                // this in effect delays repacking until a quieter moment.
-                // note: some usage can defeat this heuristic, eg insert a, b, c delete a, a, a
-                // which would result in slower repacks (but less memory waste)
-                if (this.deleteCount > 100000 && this.insertCount - this.deleteCount < 10000) {
+                if (this.deleteCount > 40000 && this.insertCount - this.deleteCount < 10000) {
                     this._repack();
-                    this.nextRepackCheck = 100000;
+                    this.nextRepackCheck = 25000;
                 }
-                else this.nextRepackCheck = 100000;
+                else this.nextRepackCheck = 25000;
             }
         }
         Map.prototype.delete = Map_delete;
@@ -253,9 +280,6 @@ Putting it all together, we get something like:
             var map2 = {}, live2 = [];
             for (i=0; i<len; i++) {
                 var key = keys[i];
-                // if keys are often reused, then copy over only keys/values not yet seen
-                // however, if keys are used only once, there will be no duplicates
-                // but if there are, up to 50% faster to skip them
                 if (map[key] /*&& !map2[key]*/) {
                     map2[key] = this.map[key];
                     live2.push(key);
@@ -268,3 +292,25 @@ Putting it all together, we get something like:
         console.log("AR: repack ms", Date.now()-t1);
         }
         Map.prototype._repack = Map__repack;
+
+The repack heuristic checks whether to repack once every 25,000 deletions.
+Repacking will not happen unless there is a chance to free at least 40,000
+holes and there are no more than 10k items currently mapped.  Too few holes is
+not worth spending time reclaiming.  Too many objects would block threads too
+long -- it is better to have too many holes than to block for a long time.
+
+This approach sustains rates of
+- 2.7m/s 1m insert/delete pairs
+- 10.7m/s 1m inserts (0 to 1m)
+- 47.6m/s 1m deletes (1m down to 0, 1 repack)
+- 8.7m/s 1m insertions followed by 1m deletes (1 repack) (the above two combined)
+- 12.8m/s runs of 200-item "ripples" on top of 20k items (more than 10k)
+- 8.5m/s runs of 200-item "ripples" on top of 9999 items (less than 10k)
+- repack time is 3-4ms (for 9999 items), 1ms for 2000.
+
+We started with a very straightforward implementation which could only sustain
+2.5m inserts / deletes best case and degraded severely as the hash size grew
+and achieved 1.1m/s ripple rates, and ended with 2.7m inserts / deletes worst
+case, which does not degrade with hash size and achieves 11m/s ripple rates.
+Since ripple rates are expected to be be the most common use case, for our
+needs this is a 10 x speed improvement.
