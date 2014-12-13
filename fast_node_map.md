@@ -1,5 +1,5 @@
-How To Build A Fast Nodejs Map
-==============================
+A Fast Nodejs Key-Value Map
+===========================
 
 2014-12-12 - AR.
 
@@ -47,7 +47,7 @@ the cpu.  Perhaps a garbage collection anomaly like when shifting very large
 arrays; don't know. The test is trivial, basically variations on:
 
         m = new Map0();
-        for (i=0; i<100000; i++) { m.set(i, i); m.delete(i); }
+        // for (i=0; i<100000; i++) { m.set(i, i); m.delete(i); }
         for (i=0; i<100000; i++) m.set(i, i);
         for (i=0; i<100000; i++) m.delete(i);
 
@@ -67,8 +67,8 @@ We can un-set values instead of deleting them; that's much faster:
 
 Runs much faster (1 million inserts then 1 million deletes in .09 seconds, ie
 11m/s insert/delete pairs).  But grows potentially without bound, because all
-those undefined values still take up space, about 6 bytes each.  The more
-deletions, the more memory leaked.
+those undefined values still take up space, about 6 bytes each (on a 32-bit
+system).  The more deletions, the more memory leaked.
 
 ## Fix for the work-around:  copy to new hash
 
@@ -108,8 +108,8 @@ Aside: array usage tips:
 - array.length can be assigned, it shortens the array but does not free memory
 - `array.slice()` frees memory, but runs slower than setting length
 
-Anyway, 43m/s insert rate and 330m/s iteration rate is very nice.  Instead of
-looking up the keys in the hash, we can keep them in one of these fast arrays.
+Anyway, 43m/s insert rate and 330m/s iteration rate is very nice indeed.
+Instead of looking up the keys in the hash, we can keep them in an array.
 We may encounter a key more than once, depending on access patterns, but at
 this speed it might not matter.  (Aside: `{}` and `new` objects insert at
 14m/s and properties can be read at 240m/s for numbers `o[i]`, 370m/s for
@@ -121,10 +121,10 @@ Aside: object usage tips:
 - structs are optimized for access, are faster than hashes
 - structs can not have too many insertions/deletions
 - one can be converted into the other on the fly
-- setting properties p on {} objects is slower
+- setting ad-hoc properties p on {} objects is slower
 - setting pre-declared properties p on {p: null} is faster
 - objects created with `new` get their properties struct-ized,
-  both those set with this.property = value and inherited properties
+  both those inherited and those set with `this.property = value`
 - it is faster to test properties for truthy/falsy than for value
 - it is faster to set a property to a number or string than to `null` or `undefined`
 
@@ -205,7 +205,7 @@ of live items in the hash.  If we do not want repack to block longer than
 
 The number of live items can not be known precisely without enumerating the
 hash (slow).  However, we can track insertions and deletions, and for many use
-cases the difference between insertions and deletions will roughly correspond
+cases the difference between insertions and deletions will correspond
 to the number of live keys.
 
         if (!this.nextRepackCheck) {
@@ -275,9 +275,9 @@ Putting it all together, we get something like:
         Map.prototype.delete = Map_delete;
 
         function Map__repack( ) {
-        var t1 = Date.now();
             var i, map = this.map, keys = this.keys, len = this.keys.length;
             var map2 = {}, live2 = [];
+
             for (i=0; i<len; i++) {
                 var key = keys[i];
                 if (map[key] /*&& !map2[key]*/) {
@@ -285,11 +285,11 @@ Putting it all together, we get something like:
                     live2.push(key);
                 }
             }
+
             this.map = map2;
             this.keys = live2;
             this.insertCount = live2.length;
             this.deleteCount = 0;
-        console.log("AR: repack ms", Date.now()-t1);
         }
         Map.prototype._repack = Map__repack;
 
