@@ -150,5 +150,21 @@ streamer.  Other, non-streaming writers can also be useful, eg sending
 datagrams or writing to syslog, all with the same interface.
 
 
+Putting It All Together
+-----------------------
+
+Put all together, we have something that appears like
+
+        // construct a custom logger writing to stdout
+        var logger = new Logger('info')
+            .addWriter(process.stdout)
+            .addFilter(function(message, level) {
+                return new Date.toISOString() + " [" + level + "] " + message;
+            });
+
+        // use the logger
+        logger.info("Hello, world.");
+
+
 And there it is -- fast, configurable, versatile, simple.
 
