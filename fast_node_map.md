@@ -312,7 +312,8 @@ This approach sustains rates of
 - 8.5m/s runs of 200-item "ripples" on top of 9999 items (less than 10k)
 - repack time is 3-4ms (for 9999 items), 1ms for 2000.
 
-We traded memory invariance for performance.  By allowing memory usage to
-creep up if needed, we doubled "ripple" throughput (our expected use case).
-We also removed exposure to a severe delete anomaly that could potentially tie
-up the cpu and block all threads.
+Looking back over what we've accomplished, we traded memory invariance for
+performance.  By allowing memory usage to slowly creep up at times, we doubled
+"ripple" throughput (our expected use case).  We also removed exposure to a
+severe delete anomaly that could potentially tie up the cpu and block all
+threads.
