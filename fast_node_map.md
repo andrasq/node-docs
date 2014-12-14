@@ -38,7 +38,7 @@ Map implemented with a native nodejs hash:
 - insert/dele pairs, 100k: 2m/s (1m: 2.3m/s)
 - inserts only, 100k: 25m / s (1m: 13m/s)
 - deletes only, 100k: 1.095 sec 100k/s, ms (1m: 664.5 sec, 150/s)
-- 200-item "ripple" on top of 1k stored: 10m/s (20k: 4.7m/s; 100: 9m/s)
+- 200-item "ripple" on top of 1k stored: 10m/s (10k: 10m/s, 20k: 10m/s; 100k: 6m/s)
 
 Yikes!  We can insert 1 million items into a nodejs hash in 1 second, but
 deleting them back-to-back takes over 10 minutes!?  That's 100,000 times
