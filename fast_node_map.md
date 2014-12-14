@@ -35,10 +35,10 @@ runs much faster than setting them as properties on the object itself.
 Simple, and efficient too, one should think, using a language feature.  Wrong:
 
 Map implemented with a native nodejs hash:
-- insert/dele pairs, 100k:  (1m: 2.3m/s)
+- insert/dele pairs, 100k: 2m/s (1m: 2.3m/s)
 - inserts only, 100k: 25m / s (1m: 13m/s)
 - deletes only, 100k: 1.095 sec 100k/s, ms (1m: 664.5 sec, 150/s)
-- 10-item "ripple" on top of 1k stored: 1.1m/s
+- 200-item "ripple" on top of 1k stored: 10m/s (20k: 4.7m/s; 100: 9m/s)
 
 Yikes!  We can insert 1 million items into a nodejs hash in 1 second, but
 deleting them back-to-back takes over 10 minutes!?  That's 100,000 times
@@ -299,18 +299,20 @@ holes and there are no more than 10k items currently mapped.  Too few holes is
 not worth spending time reclaiming.  Too many objects would block threads too
 long -- it is better to have too many holes than to block for a long time.
 
+Conclusion
+----------
+
 This approach sustains rates of
 - 2.7m/s 1m insert/delete pairs
 - 10.7m/s 1m inserts (0 to 1m)
 - 47.6m/s 1m deletes (1m down to 0, 1 repack)
 - 8.7m/s 1m insertions followed by 1m deletes (1 repack) (the above two combined)
+- 17m/s runs of 200-item "ripples" on top of 1000 items (after gc; 14.5 without; 19m/s peak)
 - 12.8m/s runs of 200-item "ripples" on top of 20k items (more than 10k)
 - 8.5m/s runs of 200-item "ripples" on top of 9999 items (less than 10k)
 - repack time is 3-4ms (for 9999 items), 1ms for 2000.
 
-We started with a very straightforward implementation which could only sustain
-2.5m inserts / deletes best case and degraded severely as the hash size grew
-and achieved 1.1m/s ripple rates, and ended with 2.7m inserts / deletes worst
-case, which does not degrade with hash size and achieves 11m/s ripple rates.
-Since ripple rates are expected to be be the most common use case, for our
-needs this is a 10 x speed improvement.
+We traded memory invariance for performance.  By allowing memory usage to
+creep up if needed, we doubled "ripple" throughput (our expected use case).
+We also removed exposure to a severe delete anomaly that could potentially tie
+up the cpu and block all threads.
