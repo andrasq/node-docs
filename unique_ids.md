@@ -143,11 +143,12 @@ Conclusions
 
 If database collections have to be assigned a unique ids, it is tempting to
 use the above simple, small and very very fast id generator instead of
-`BSONPure.ObjectID()`.
+`BSON.ObjectID()`.
 
 
 Related Work
 ------------
 
+- [mongoid-js](https://www.npmjs.com/package/mongoid-js)
 - node-uuid uuid.v4()
 - mongodb BSONPure.ObjectID()
