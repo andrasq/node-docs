@@ -275,6 +275,6 @@ above structure to deal with those too.
 Related Work
 ------------
 
-[phdate-js](https://www.npmjs.com/package/phpdate-js)
-[ultra-strftime](https://www.npmjs.com/package/ultra-strftime)
-[fast-strftime](https://www.npmjs.com/package/fast-strftime)
+- [phdate-js](https://www.npmjs.com/package/phpdate-js)
+- [ultra-strftime](https://www.npmjs.com/package/ultra-strftime)
+- [fast-strftime](https://www.npmjs.com/package/fast-strftime)
