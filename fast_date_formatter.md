@@ -270,3 +270,11 @@ bursts, 5x faster in the expected case, 3x faster in the worst case.
 We didn't address padding (date should show '01' not '1'), leap days,
 timezones, helper functions, but should be straight-forward to extend the
 above structure to deal with those too.
+
+
+Related Work
+------------
+
+[phdate-js](https://www.npmjs.com/package/phpdate-js)
+[ultra-strftime](https://www.npmjs.com/package/ultra-strftime)
+[fast-strftime](https://www.npmjs.com/package/fast-strftime)
