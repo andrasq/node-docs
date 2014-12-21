@@ -1,6 +1,8 @@
 Fast Unique Id Generation
 =========================
 
+2014-12-21 AR.
+
 
 There are times when one needs unique identifiers.  It is good to have a
 source that is both very fast and guaranteed unique.
@@ -141,9 +143,9 @@ at 20 million ids / second.)
 Conclusions
 -----------
 
-If database collections have to be assigned a unique ids, it is tempting to
+If database collections have to be assigned unique ids, it is tempting to
 use the above simple, small and very very fast id generator instead of
-`BSON.ObjectID()`.
+`BSON.ObjectID()`, which is 35 x slower.
 
 
 Related Work
