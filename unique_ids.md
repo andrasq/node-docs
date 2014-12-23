@@ -114,18 +114,18 @@ This is more than half the rate achieved by the random string generator above,
 `(Math.random() * 0x100000000).toString(16)`
 
         var machineIdStr = hexFormat(Math.random() * 0x1000000 | 0, 6);
-    	var processIdStr = hexFormat(process.pid, 4);
+        var processIdStr = hexFormat(process.pid, 4);
 
         var sequenceId = 0;
         var sequencePrefix = "00000";
         var sequenceDigits = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
         function mongoid( ) {
-	    sequenceId += 1;
+            sequenceId += 1;
             if (sequenceId % 16 === 0) {
                 sequencePrefix = hexFormat((sequenceId / 16 | 0).toString(16), 5);
             }
-	    var id =
+            var id =
                 getTimestampStr() +
                 machineIdStr +
                 processIdStr +
