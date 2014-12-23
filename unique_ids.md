@@ -82,12 +82,12 @@ easily do better.
 
 The key here is to not recompute results that can be reused from the previous
 call.  Of the four id components, 2 do not change, and one changes only
-infrequently.  The previously computed strings can be reused reused.
+infrequently.  The previously computed strings can be reused.
 
-Preformatting just machineId and processId is 60% faster, 1100k ids / second.
+Preformatting just machineId and processId is already 60% faster, 1100k ids / second.
 
 Reusing the timestamp (which changes just once every 1000 milliseconds) for up
-to 10 ms or 1000 calls is 250% faster yet, 2700 ids / second.
+to 10 ms or 1000 calls is 250% faster still, 2700 ids / second.
 
         var _timestamp;
         var _timestampStr;
@@ -105,9 +105,9 @@ to 10 ms or 1000 calls is 250% faster yet, 2700 ids / second.
 It might be slightly faster to zero-pad the hex string by looking up the
 zeroes prefix in a table, but timings are inconclusive.
 
-Most of the remaining time is spent formatting the sequence id.  If we think
-about it, the vast majority of changes to the sequence id are to the least
-significant digit.  There must be something to reuse here too... and there is.
+Most of the remaining time is spent formatting the sequence id.  There must be
+something to reuse here too... and there is.  If we think about it, almost all
+changes to the sequence id are to the least significant digit.
 By retaining the sequence prefix and appending just the last digit, we can
 generate 10 million unique ids in .7 seconds -- 14 million ids per second!
 This is more than half the rate achieved by the random string generator above,
@@ -143,9 +143,12 @@ at 20 million ids / second.)
 Conclusions
 -----------
 
-If database collections have to be assigned unique ids, it is tempting to
-use the above simple, small and very very fast id generator instead of
-`BSON.ObjectID()`, which is 35 x slower.
+Even the first version of our code was faster than `BSON.ObjectID()`, and we
+were able to speed that up 20 x, from 690k/s to 1.1m/s to 2.7m/s to 14m/s.
+
+If we need to generate lots of unique ids (like when assigning ids to data
+collections), it is appealing to use a simple, small and very fast id
+generator like the above.
 
 
 Related Work
