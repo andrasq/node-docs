@@ -13,11 +13,11 @@ Random Is Not Unique
 
 This is a subtle but important point: a randomly generated number, no matter
 how large, is not guaranteed unique.  It's always surprising how many people
-equate "sufficiently random" with "unique."
+equate "sufficiently random" with "unique."  SHA checksums and MD5 hashes are
+not unique.
 
-
-Simple andFast
---------------
+Simple and Fast
+---------------
 
 If uniqueness is not an absolute requirement, the simplest is to generate a
 random string.  This is very fast, and for many uses (eg request ids, unit
@@ -46,15 +46,24 @@ of the full hierarchy of addresses, MongoDB assigns each server a unique
 3-byte binary server id.  This, combined with a 4-byte timestamp, a 2-byte
 process id, and a 3-byte monotonic sequence number, forms the unique id.
 
-The id internally is passed around as an object, but converted to text it is
-represented as a 24-char hex string.  The order of the fields is timestamp,
-machine-id, pid, sequence-num.
+These ids are not cyptographically secure, the pattern is easily visible.
+They are not suitable for use where guessability would not be acceptable.
 
 
 Implementation
 --------------
 
-In essence:
+The id inside mongodb is maintained an object, but converted to text it is
+represented as a 24-char hex string.  The order of the fields is timestamp,
+machine-id, pid, sequence-num.
+
+For our purposes, the object is a distraction, we are interested in the unique
+identifiers, not in their implementation mechanism.  They are interchangeable
+and easily converted:  every id object corresponds to one unique id string and
+vice versa, so the internal represenatation does not matter.  Strings are much
+faster to generate and use, so we'll work with string ids.
+
+The implementation, in essence:
 
         var machineId = Math.random() * 0x1000000 | 0;
         var processId = process.pid;
@@ -87,7 +96,7 @@ infrequently.  The previously computed strings can be reused.
 Preformatting just machineId and processId is already 60% faster, 1100k ids / second.
 
 Reusing the timestamp (which changes just once every 1000 milliseconds) for up
-to 10 ms or 1000 calls is 250% faster still, 2700 ids / second.
+to 10 ms or 1000 calls is 250% faster still, 2700k ids / second.
 
         var _timestamp;
         var _timestampStr;
@@ -102,7 +111,7 @@ to 10 ms or 1000 calls is 250% faster still, 2700 ids / second.
             return _timestampStr;
         }
 
-It might be slightly faster to zero-pad the hex string by looking up the
+It may be slightly faster to zero-pad the hex string by looking up the
 zeroes prefix in a table, but timings are inconclusive.
 
 Most of the remaining time is spent formatting the sequence id.  There must be
@@ -110,8 +119,8 @@ something to reuse here too... and there is.  If we think about it, almost all
 changes to the sequence id are to the least significant digit.
 By retaining the sequence prefix and appending just the last digit, we can
 generate 10 million unique ids in .7 seconds -- 14 million ids per second!
-This is more than half the rate achieved by the random string generator above,
-`(Math.random() * 0x100000000).toString(16)`
+This is more than half the rate achieved by the most minimal random string
+generator, `(Math.random() * 0x100000000).toString(16)`, mentioned above.
 
         var machineIdStr = hexFormat(Math.random() * 0x1000000 | 0, 6);
         var processIdStr = hexFormat(process.pid, 4);
@@ -123,7 +132,7 @@ This is more than half the rate achieved by the random string generator above,
         function mongoid( ) {
             sequenceId += 1;
             if (sequenceId % 16 === 0) {
-                sequencePrefix = hexFormat((sequenceId / 16 | 0).toString(16), 5);
+                sequencePrefix = hexFormat((sequenceId / 16).toString(16), 5);
             }
             var id =
                 getTimestampStr() +
