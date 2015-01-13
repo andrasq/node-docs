@@ -36,19 +36,21 @@ node-v0.10.29, a setTimeout read() loop can read the data and reply 30% faster
 than if listening for it.  So try a few alternates.
 
 Be lazy, check first.  Similarly, decoding the query parameters `a=1&b=2&c=3`
-requires url-decoding all names and values.  The average of the node built-in
-`decodeURIComponent` is greatly increased by pre-testing strings for whether
-they contain any encoded characters.  Parameter decode speeds can be increased
-by an order of magnitude this way (.85m/s to 7.3m/s).
+requires url-decoding all names and values.  The average speed of the node
+built-in `decodeURIComponent` is greatly increased by pre-testing strings for
+whether they contain any encoded characters.  Parameter decode speeds can be
+increased by an order of magnitude this way (.85m/s to 7.3m/s).
 
 ### path params vs query params
 
-Not all fast is created alike.  REST APIs specify the action with the request
-method, and pass parameters embedded in the request path.  Node's fast regular
-expressions can loop over the request paths to match the route and extract the
-path params in a single go (5m/s tests), but query params with fixed routes can
-be implemented as a much faster hash lookup (42m/s lookups).  An app with 25
-routes can only map 200k/sec REST paths, but still 42m/s static paths.
+Not all fast is created alike.  REST APIs pass parameters embedded in the
+request path.  Node can loop over the request paths and can match the route
+and extract the path params in a single go with regular expressions very
+quickly (5m tests/s / num routes).  Fixed routes with an appended query string
+can be implemented as a much faster hash lookup (42m/s).  An app with 25
+routes can only map 5m / 25 * 2 = 400k/sec paths on average; the static lookup
+can decode 1000k/sec sets of 3 query params per call.  The winner: static
+routes with the slow parameter decode.
 
 ### structs vs hashes
 
