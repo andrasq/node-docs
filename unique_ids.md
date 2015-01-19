@@ -24,7 +24,7 @@ random string.  This is very fast, and for many uses (eg request ids, unit
 tests) is unique enough.  (It is limited to 8 hex digits:  the nodejs random
 number generator apparently returns 32-bit random numbers.)
 
-        Math.floor(Math.random() * 0x100000000).toString(16)
+        Math.floor(Math.random() * 0x100000000 | 0).toString(16)
 
 
 Guaranteed Unique
@@ -46,7 +46,7 @@ of the full hierarchy of addresses, MongoDB assigns each server a unique
 3-byte binary server id.  This, combined with a 4-byte timestamp, a 2-byte
 process id, and a 3-byte monotonic sequence number, forms the unique id.
 
-These ids are not cyptographically secure, the pattern is easily visible.
+These ids are not cryptographically secure, the pattern is easily visible.
 They are not suitable for use where guessability would not be acceptable.
 
 
@@ -156,13 +156,13 @@ Even the first version of our code was faster than `BSON.ObjectID()`, and we
 were able to speed that up 20 x, from 690k/s to 1.1m/s to 2.7m/s to 14m/s.
 
 If we need to generate lots of unique ids (like when assigning ids to data
-collections), it is appealing to use a simple, small and very fast id
-generator like the above.
+collections), a small and extremely fast id generator like the above is very
+appealing.
 
 
 Related Work
 ------------
 
 - [mongoid-js](https://www.npmjs.com/package/mongoid-js)
-- node-uuid uuid.v4()
-- mongodb BSONPure.ObjectID()
+- [node-uuid](https://npmjs.com/package/node-uuid) uuid.v4()
+- [mongodb](https://www.npmjs.com/package/mongodb) BSONPure.ObjectID()
