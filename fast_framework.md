@@ -28,14 +28,14 @@ to trade off peak throughput for the convenience of the built-in HTTP handling.
 Not all parts of the system libraries are equally fast.  Sometimes trying a
 different approach can be illuminating.
 
-Read, don't listen.  A node web server must read the request body, which can be
+**Read, don't listen.**  A node web server must read the request body, which can be
 done with read() or on().  There is no end-of-file indicator, however; the 'end'
 event must be listened for, so the data is typically consumed with another
 listen `res.on('data')`.  This can be a mistake -- it turns out that with
 node-v0.10.29, a setTimeout read() loop can read the data and reply 30% faster
 than if listening for it.  So try a few alternates.
 
-Be lazy, check first.  Similarly, decoding the query parameters `a=1&b=2&c=3`
+**Be lazy, check first.**  Similarly, decoding the query parameters `a=1&b=2&c=3`
 requires url-decoding all names and values.  The average speed of the node
 built-in `decodeURIComponent` is greatly increased by pre-testing strings for
 whether they contain any encoded characters.  Parameter decode speeds can be
@@ -43,7 +43,7 @@ increased by an order of magnitude this way (.85m/s to 7.3m/s).
 
 ### path params vs query params
 
-Not all fast is created alike.  REST APIs pass parameters embedded in the
+**Not all fast is created alike.**  REST APIs pass parameters embedded in the
 request path.  Node can loop over the request paths and can match the route
 and extract the path params in a single go with regular expressions very
 quickly (5m tests/s / num routes).  Fixed routes with an appended query string
@@ -54,7 +54,7 @@ routes with the slow parameter decode.
 
 ### structs vs hashes
 
-Structs are fast, hashes are slow.  An object constructed with `new` or as a
+**Structs are fast, hashes are slow.**  An object constructed with `new` or as a
 literal object `{ ... }` will be made a struct; existing fields and methods
 accessed with direct lookups and all will be well and fast.
 
