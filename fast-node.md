@@ -80,16 +80,20 @@ Notes
 ### Objects
 
 There are two kids of node objects, structs and hashes.  The two are
-indistinguishable.  Structs have a static layout and are faster to access.
-Node can convert back and forth between the two:  adding/deleting fields to
-structs can downgrade them to a hash, and assigning a hash to a function's
-prototype upgrades it to a struct (this is the `toFastProperties()` trick used
-in the Bluebird promises package).
+indistinguishable.  Structs have a static layout, hashes are dynamic.  Node
+can convert back and forth between the two:  adding/deleting fields to structs
+can downgrade them to a hash, and assigning a hash to a function's prototype
+upgrades it to a struct (this is the `toFastProperties()` trick used in the
+Bluebird promises package).
 
-Node objects are ok fast, but not blazing fast and not very fast.  Ok
-fast.  The can be accessed very fast, but adding properties is only 2ms,
-deleting properties is 1.5m/s.  In some cases, deleting properties
-enters a pessimal condition and runs at just thousands per second.
+Node structs are blazing fast.  Accessing struct properties is via a direct
+map, without requiring hashing.  Struct properties (and new object `this`
+fields and inherited methods) are very fast to access.
+
+Node hashes are prety fast, but much slower than strucst.  Adding elements to
+a hash runs at 20m/s, deleting them at 4m/s.  Note that with node-v0.10 in
+some cases deleting properties can enter a pessimal state and run at just
+thousands per second.
 
 Notes
 
