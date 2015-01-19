@@ -1,6 +1,8 @@
 On Writing Fast Nodejs Code
 ===========================
 
+2015-01-19 - AR.
+
 This is a rambling collection of thoughts on writing fast nodejs programs.
 
 The Language
