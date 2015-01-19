@@ -55,6 +55,7 @@ Notes
 - allocate arrays meant to grow with new Array().  push() into a `new Array`
   is 3x faster than into `[]`.
 - if speed is important, test a local copy of `.length`, it's 10% faster.
+- avoid iterating arrays with for (i in array)
 - node arrays are laid out as a contiguous vector of pointers.  This means
   - indexed array lookups are very very fast
   - sparse arrays still allocate space for the holes (value `undefined`)
@@ -75,10 +76,6 @@ Notes
         for (i=0; i<1000; i++) a.shift();
         // 500 shifts / second
         // change the 150k to 100k to run 40,000x faster, 20m shifts/sec:
-
-- avoid sparse arrays
-- avoid iterating arrays with for (i in array)
-
 
 ### Objects
 
@@ -148,14 +145,10 @@ unpack it in javascript than to build the hash in C++.  And it is 3x
 faster (440k/s) to return just an array of values in a well-defined
 order and build the struct in javascript than to return names as well.
 
-
-Do
+Notes
 
 - write C++ plugins with narrow interfaces to access system functions
   (time, resource usage)
-
-Avoid
-
 - do not believe that moving the code into C++ will make it faster.  It
   won't -- node is very fast, and crossing the C++/nodejs boundary is
   slow.
