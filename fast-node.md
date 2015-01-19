@@ -55,6 +55,26 @@ Notes
 - allocate arrays meant to grow with new Array().  push() into a `new Array`
   is 3x faster than into `[]`.
 - if speed is important, test a local copy of `.length`, it's 10% faster.
+- node arrays are laid out as a contiguous vector of pointers.  This means
+  - indexed array lookups are very very fast
+  - sparse arrays still allocate space for the holes (value `undefined`)
+  - shift/unshift must move all the element to keep the head at index `[0]`
+- operating on the tail of the array (push/pop) is faster than on the head
+  (shift/unshift)
+- small arrays (vector storage size of less than 1MB) are optimized and the
+  array operations `unshift, shift, push, pop` are implemented with base/bound
+  pointer updates, making shift also fast
+- shifting large arrays (over 100k items) is very very _very_ slow.  V8 not
+  only does the necessary memory copy, but it then seems to apply a
+  generational garbage collection step to every element of the array, even
+  though none of them were touched.  Node-v0.11 and iojs do not exhibit this
+  behavior.
+
+        a = [];
+        for (i=0; i<150000; i++) a[i] = i;
+        for (i=0; i<1000; i++) a.shift();
+        // 500 shifts / second
+        // change the 150k to 100k to run 40,000x faster, 20m shifts/sec:
 
 - avoid sparse arrays
 - avoid iterating arrays with for (i in array)
@@ -78,31 +98,38 @@ Notes
 
 - create a struct with `x = {a: 1, b: 2, c: 3};`
 - create a hash with `x = {}; x.a = 1; x.b = 2; x.c = 3;`
-- setting new properties p on `x = {}` objects is slower
-- setting pre-declared properties p on `x = {p: null}` is faster
+- setting new properties p on `x = {}; x.p` is slower
+- setting pre-declared properties p on `x = {p: null}; x.p` is faster
 - objects created with `new` get their instance properties struct-ized,
   both those inherited and those set with `this.property = value`
 - it is faster to test properties for truthy/falsy than for value
 - it is faster to set a property to a number or string than to `null` or `undefined`
+- iterating hash keys with `for (key in hash)` at 4m/s is much slower
+  than inserts (16m/s) or deletes (8m/s)
+- operations on small hashes (25k entries or so) run fasterare optimized, and
+  inserts/deletes run much faster than on larger hashes.
 
-- beware the node-v0.10.29 delete anomaly:  the below code runs 100x slower if
-  the key strings do not exist elsewhere.  Instead of .046 seconds, it's 4.65
-  sec of 100% cpu usage.  Could be global string reuse and gc thrashing, but
-  not sure.  (node-v0.11 does not have this issue)
+- beware the node-v0.10.29 delete anomaly:  deleting can be amazingly slow,
+  depending on current memory usage and garbage collection state.  Small
+  changes to memory usage make a huge difference to runtimes (node-v0.11 and
+  iojs do not exhibit this issue, but node-v0.11 and iojs are 25-40% slower
+  accessing hashes in general)
 
-        keys = [];
-        // comment in the next line to have node-v0.10.29 run 100x faster:
-        //for (i=0; i<100000; i++) keys[i] = i + "";
-        x = {};
+        // enable the next line to have node-v0.10.29 run 100x faster:
+        // keys = []; for (i=0; i<4000; i++) keys[i] = i;
+        x = {};         // or x = [];
         for (i=0; i<100000; i++) x[i] = i;
         for (i=0; i<100000; i++) delete x[i];
-
+        // 21k deletes / second
 
 ### JSON
 
 Counter-intuitively, JSON.stringify and JSON.parse are surprisingly slow.
 Stringifying objects for logging (500 byte strings) runs at about 130k/s, much
 slower than logging itself and as much as 20% of the total app call time.
+
+The slowness seems to roughly correspond to the relatively slow `for
+(propertyName in object)` property iteration rate.
 
 This is unfortunate, as JSON is the natural JavaScript data exchange format,
 and having it be a bottleneck is inconvenient.  For simple data logging,
