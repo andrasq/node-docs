@@ -9,21 +9,29 @@ These are some thoughts on writing a fast REST-ful (or not) framework for
 nodejs.
 
 Timings are from an AMD 3.6 GHz Phenom II x4 running node-v0.10.29.
+Call rates measured with wrk 3.0.3, `wrk -d8s -t2 -c8 http://127.0.0.1:1337`
 
 Bottlenecks
 -----------
 
-Some subtle traps to watch for
+Some fundamental limits:
 
 ### speed of light
 
-It is always good to have a clear understanding of the limits of the system.
-For node services built on top of [http](https://www.nodejs.org/api/http.html),
-the limit is that of http itself.  In my case, that meant 27k hello-world
-requests served / second.  `net.createServer()` can do 45k/s, but I was willing
-to trade off peak throughput for the convenience of the built-in HTTP handling.
+It is good to have an understanding of the limits of the system.  For node
+services built on top of [http](https://www.nodejs.org/api/http.html), the
+limit is that of http itself.  Here that meant 27k hello-world requests served
+/ second.  `net.createServer()` can do 45k/s, but I was willing to trade off
+peak throughput for the convenience of the built-in HTTP handling.
 
-### speed of system
+        net.createServer        45k/s           echo "Hello, world." string
+        http.createServer       27k/s           echo string
+
+This is a guaranteed-not-to-exceed limit, but it can not be reached for
+realistic applications.  In fact, it can take some creative trial-and-error to
+exceed 20k/s.
+
+### speed of libraries
 
 Not all parts of the system libraries are equally fast.  Sometimes trying a
 different approach can be illuminating.
@@ -35,11 +43,16 @@ listen `res.on('data')`.  This can be a mistake -- it turns out that with
 node-v0.10.29, a setTimeout read() loop can read the data and reply 30% faster
 than if listening for it.  So try a few alternates.
 
-**Be lazy, check first.**  Similarly, decoding the query parameters `a=1&b=2&c=3`
+        http.createServer       27k/s           no (ignore) body, echo string
+          res.on('data')        19k/s           consume body, echo string
+          res.read()            24.5k/s         consume body, echo string (v0.10.29)
+
+**Be lazy, check first.** Similarly, decoding the query parameters `a=1&b=2&c=3`
 requires url-decoding all names and values.  The average speed of the node
-built-in `decodeURIComponent` is greatly increased by pre-testing strings for
-whether they contain any encoded characters.  Parameter decode speeds can be
-increased by an order of magnitude this way (.85m/s to 7.3m/s).
+built-in `decodeURIComponent` is greatly increased with the simple work-around
+of pre-testing strings for whether they contain any encoded characters.  Since
+parameter names and most values often remain unchanged after encoding, decode
+speeds can be increased by an order of magnitude this way (.85m/s to 7.3m/s).
 
 ### path params vs query params
 
@@ -49,8 +62,20 @@ and extract the path params in a single go with regular expressions very
 quickly (5m tests/s / num routes).  Fixed routes with an appended query string
 can be implemented as a much faster hash lookup (42m/s).  An app with 25
 routes can only map 5m / 25 * 2 = 400k/sec paths on average; the static lookup
-can decode 1000k/sec sets of 3 query params per call.  The winner: static
-routes with the slow parameter decode.
+can decode 1m/sec sets of 3 query params per call.  The winner: with 25 routes,
+static routes with the slow parameter decode.
+
+        /echo?a=1&b=2           19.9k/s
+        /1/2/echo               20.3k/s         1st route
+        /1/2/echo               19.7k/s         11th route
+        /1/2/echo               18.5k/s         21st route
+
+The breakeven is around 10 regex tests.  Similarly, more call params favor
+regex matches; fewer params favor static routes.
+
+        /echo?a=1&b=2&c=3&d=4&e=5 18.6k/s
+        /1/2/3/4/5/echo         19.4k/s         1st route
+        /1/2/3/4/5/echo         18.5k/s         11th route
 
 ### structs vs hashes
 
