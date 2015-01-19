@@ -107,8 +107,8 @@ Notes
 - it is faster to set a property to a number or string than to `null` or `undefined`
 - iterating hash keys with `for (key in hash)` at 4m/s is much slower
   than inserts (16m/s) or deletes (8m/s)
-- operations on small hashes (25k entries or so) run fasterare optimized, and
-  inserts/deletes run much faster than on larger hashes.
+- operations on small hashes (25k entries or so) seem to be optimized, and
+  element inserts/deletes run much faster than on larger hashes.
 
 - beware the node-v0.10.29 delete anomaly:  deleting can be amazingly slow,
   depending on current memory usage and garbage collection state.  Small
@@ -156,3 +156,35 @@ Notes
 - do not believe that moving the code into C++ will make it faster.  It
   won't -- node is very fast, and crossing the C++/nodejs boundary is
   slow.
+
+
+The Builtins
+------------
+
+### Http.Agent
+
+Connection reuse in http.Agent (an internal part of http.request) is kind of
+broken, and consequently slow.
+
+Notes
+
+- connections are only reused if a second call to the same url is already
+  waiting.  Back-to-back calls each open a new connection.
+  - thus lots of sockets enter a 60-second TIME_WAIT state during which they can
+    not be used, leaking a scarce system resource.
+  - thus the per-connection http.request call rate per is 1/3 of what it could
+    be (2k/sec instead of 6.5k/s)
+  - thus increasing the maxSockets limit results in slower call rates (because
+    maxSockets limits currently open connections.  By allowing more
+    connections, there will be fewer queued, and only queued connections get
+    to reuse an open connection.)
+- the maxSockets agent option applies to per url, not to the connection pool
+  overall.  Thus the default limit of 5, with 10 different urls accessed,
+  means 50 sockets can be held open concurrently.
+
+### setImmediate
+
+The node-v0.10.29 setImmediate call suffers from many of the performance
+bottlenecks outlined under Objects, above, and loses more than half its
+potential speed because of it.  Node-v0.11 reimplements the functionality,
+but v0.10.13 is slower overall on setImmediate than v0.10.29.
