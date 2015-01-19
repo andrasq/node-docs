@@ -176,8 +176,8 @@ Notes
     not be used, leaking a scarce system resource.
   - thus the per-connection http.request call rate per is 1/3 of what it could
     be (2k/sec instead of 6.5k/s)
-  - thus increasing the maxSockets limit results in slower call rates (because
-    maxSockets limits currently open connections.  By allowing more
+  - thus increasing the maxSockets limit can result in lower call throughput
+    (because maxSockets limits currently open connections.  By allowing more
     connections, there will be fewer queued, and only queued connections get
     to reuse an open connection.)
 - the maxSockets agent option applies to per url, not to the connection pool
