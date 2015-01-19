@@ -21,7 +21,7 @@ in critical inner loops.  In many cases it is faster to call a one-line
 function than to disable optimization for the loop.  Two in particular
 that disable optimization are `try/catch` and `arguments`.
 
-Do
+Notes
 
 - for speed-critical loops, copy out variables used in the loop into the
   local scope.  `list[i]` is faster to access than `self.list[i]`
@@ -31,8 +31,6 @@ Do
 - binding variables with a closure is comparable in speed to (slightly
   faster than) passing function parameters.  Which is actually faster
   varies; if it matters, time it
-
-Avoid
 
 - do not pass `arguments` to other functions, it disables optimization.
   (It is safe to do, though; in node-v0.10.29 it does not leak memory)
@@ -46,31 +44,59 @@ Node arrays are blazing fast.  They can be accessed and traversed at a
 hundred million elements per second and grown at dozens of millions of
 elements per second.
 
-Do
+Notes
+
+- array.length can be assigned, it shortens the array but does not free memory
+- assigning `array.slice()` frees memory, but runs slower than setting length
 
 - iterate arrays from 0 to length
-- allocate arrays meant to grow with new Array().  `x = []; x.push()` is
-  3x slower than `x = new Array(); x.push(1);`
+- push, do not append by index, it's 2x faster
+- do not preallocate large arrays, growing them on demand is 2x faster
+- allocate arrays meant to grow with new Array().  push() into a `new Array`
+  is 3x faster than into `[]`.
+- if speed is important, test a local copy of `.length`, it's 10% faster.
 
-Avoid
-
-- sparse arrays
-- iterating arrays with for (i in array)
+- avoid sparse arrays
+- avoid iterating arrays with for (i in array)
 
 
 ### Objects
 
 There are two kids of node objects, structs and hashes.  The two are
-indistinguishable, but structs are much faster to access.
+indistinguishable.  Structs have a static layout and are faster to access.
+Node can convert back and forth between the two:  adding/deleting fields to
+structs can downgrade them to a hash, and assigning a hash to a function's
+prototype upgrades it to a struct (this is the `toFastProperties()` trick used
+in the Bluebird promises package).
 
 Node objects are ok fast, but not blazing fast and not very fast.  Ok
 fast.  The can be accessed very fast, but adding properties is only 2ms,
 deleting properties is 1.5m/s.  In some cases, deleting properties
 enters a pessimal condition and runs at just thousands per second.
 
-Avoid
+Notes
 
-- node is very slow at iterating objects with `for (key in object)`.  Accessing
+- create a struct with `x = {a: 1, b: 2, c: 3};`
+- create a hash with `x = {}; x.a = 1; x.b = 2; x.c = 3;`
+- setting new properties p on `x = {}` objects is slower
+- setting pre-declared properties p on `x = {p: null}` is faster
+- objects created with `new` get their instance properties struct-ized,
+  both those inherited and those set with `this.property = value`
+- it is faster to test properties for truthy/falsy than for value
+- it is faster to set a property to a number or string than to `null` or `undefined`
+
+- beware the node-v0.10.29 delete anomaly:  the below code runs 100x slower if
+  the key strings do not exist elsewhere.  Instead of .046 seconds, it's 4.65
+  sec of 100% cpu usage.  Could be global string reuse and gc thrashing, but
+  not sure.  (node-v0.11 does not have this issue)
+
+        keys = [];
+        // comment in the next line to have node-v0.10.29 run 100x faster:
+        //for (i=0; i<100000; i++) keys[i] = i + "";
+        x = {};
+        for (i=0; i<100000; i++) x[i] = i;
+        for (i=0; i<100000; i++) delete x[i];
+
 
 ### JSON
 
