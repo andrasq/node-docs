@@ -303,7 +303,7 @@ Conclusion
 ----------
 
 This approach sustains rates of
-- 2.7m/s 1m insert/delete pairs
+- 4.1m/s 100k insert/delete pairs (2.7m/s for 1m)
 - 10.7m/s 1m inserts (0 to 1m)
 - 47.6m/s 1m deletes (1m down to 0, 1 repack)
 - 8.7m/s 1m insertions followed by 1m deletes (1 repack) (the above two combined)

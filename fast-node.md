@@ -40,6 +40,16 @@ Notes
 - do not build closures in tight inner loops, some closures are expensive
   to construct
 
+### Strings
+
+WRITEME: ...
+
+Notes
+
+- testing "foo".charCodeAt(0) is faster than testing "foo"[0]
+- strings are at no slower than Buffer, sometimes faster
+- ...
+
 ### Arrays
 
 Node arrays are blazing fast.  They can be accessed and traversed at a
@@ -107,8 +117,8 @@ Notes
   both those inherited and those set with `this.property = value`
 - it is faster to test properties for truthy/falsy than for value
 - it is faster to set a property to a number or string than to `null` or `undefined`
-- iterating hash keys with `for (key in hash)` at 4m/s is much slower
-  than inserts (16m/s) or deletes (8m/s)
+- iterating hash keys with `for (key in hash)` is slow.  At 4-10m keys/s,
+  it's slower than inserts (16m/s) or deletes (8m/s).
 - operations on small hashes (25k entries or so) seem to be optimized, and
   element inserts/deletes run much faster than on larger hashes.
 
@@ -124,6 +134,13 @@ Notes
         for (i=0; i<100000; i++) x[i] = i;
         for (i=0; i<100000; i++) delete x[i];
         // 21k deletes / second
+
+### Events
+
+Event listeners are just registered callbacks, and emitting events is just a
+function call.  They are fast.
+
+... WRITEME
 
 ### JSON
 
@@ -163,6 +180,30 @@ Notes
 The Builtins
 ------------
 
+Many nodejs built-ins are suboptimal, and can be improved upon.
+
+### setImmediate
+
+The node-v0.10.29 setImmediate call suffers from many of the performance
+bottlenecks outlined under Objects, above, and loses more than half its
+potential speed because of it.  Node-v0.11 reimplements the functionality,
+but v0.11.13 is slower overall on setImmediate than v0.10.29.
+
+Accessing event loop from inside node is kind of slow.  v0.10.29 can launch
+2.5 million events / second; v0.11.13 can launch 1 million.  Since each
+setTimeout, each continuation, eac i/o action queues an event, that can cap
+throughput at 1 million continuations / second.  In practice, the default node
+setTimeout and setImmediate functions limit this even more.
+
+All i/o events and default node setTimeout callbacks go through the event
+loop.  The default setTimeout creates a new event for each timeout time, which
+limits the rate at which timeouts can be created and run.
+
+Notes
+
+- See [qtimers](https://www.npmjs.org/package/qtimers) for a 10x faster
+  drop-in replacement.
+
 ### Http.Agent
 
 Connection reuse in http.Agent (an internal part of http.request) is kind of
@@ -171,22 +212,54 @@ broken, and consequently slow.
 Notes
 
 - connections are only reused if a second call to the same url is already
-  waiting.  Back-to-back calls each open a new connection.
+  waiting.  Consecutive calls, even back-to-back, each open a new connection.
   - thus lots of sockets enter a 60-second TIME_WAIT state during which they can
-    not be used, leaking a scarce system resource.
+    not be used, leaking a scarce system resource
   - thus the per-connection http.request call rate per is 1/3 of what it could
     be (2k/sec instead of 6.5k/s)
   - thus increasing the maxSockets limit can result in lower call throughput
     (because maxSockets limits currently open connections.  By allowing more
     connections, there will be fewer queued, and only queued connections get
     to reuse an open connection.)
-- the maxSockets agent option applies to per url, not to the connection pool
-  overall.  Thus the default limit of 5, with 10 different urls accessed,
-  means 50 sockets can be held open concurrently.
+- each socket opened is placed on a multi-level list, without it being used or
+  needed in the future.  This is unnecessary overhead.
+- the maxSockets option is a per-url limit, not a connection pool limit.
+  There is no upper bound on the total connection pool size.  With the default
+  limit of 5, with 10 different urls accessed, means 50 sockets can be held
+  open concurrently.
 
-### setImmediate
 
-The node-v0.10.29 setImmediate call suffers from many of the performance
-bottlenecks outlined under Objects, above, and loses more than half its
-potential speed because of it.  Node-v0.11 reimplements the functionality,
-but v0.10.13 is slower overall on setImmediate than v0.10.29.
+The Achilles Heels
+------------------
+
+As currently implemented, some parts of nodejs are inherent bottlenecks to
+high performance.
+
+- iterating over hash keys (traversing objects) is comparatively slow (10m
+  keys/s), and this affects any code that has to process hash contents, eg
+  Object.keys() and JSON.stringify()
+
+- input/output of node objects is slow, because JSON.stringify() is slow (4m
+  fields/sec), ultimately because iterating objects is slow
+
+- the event loop is slow, about 1m events queued per second with
+  `process.binding('timer_wrap').Timer` and 0.7m - 2.4m timer events run per
+  second.  This for node-v0.10.29; node v0.11.13 and iojs are even slower.
+
+- building node objects in C++ is slower than in node javascript, so there is
+  little hope for more efficient implementations using compiled C++ packages.
+
+- passing objects to helper processes requires serialization, which is slow
+  because JSON.stringify is slow
+
+You can't win.  You can't break even.  You can't even quit the game.
+
+Admittedly, these limits are theoretical for most applications, most of which
+are running at 3 or 4 orders of magnitude slower.
+
+However, apps designed for speed can quickly start running into these limits.
+A real-life example:  a service fielding 4000 calls per second and logging a
+50-field JSON object with each call was found to be spending 20% of its
+runtime, 0.2 sec of every second, in JSON.stringify.  We can speed up the
+service, but at 10,000 calls per second it will be spending half its time JSON
+encoding.  That's an inherent bottleneck.
