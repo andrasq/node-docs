@@ -40,6 +40,7 @@ steps, mongodb access, and extensive call logging).
 \* hapi is limited to 25 calls/sec per connection, and though it is helped by
   TCP_NODELAY (`setNoDelay()` raises it to 1.8k/s), it's not clear if this is
   configurable with the available api
+<br>
 \*\* restify can achieve 8k/s if `send()` is avoided in favor of `writeHead()`
   and `end()`.  This of course loses some of the benefit of using a framework.
 
@@ -61,5 +62,6 @@ Not all logging is created alike.  Logging can consume 20% or more of the time
 used by a lean service (espcially json logging; `JSON.stringify` is slow), so
 it is important to pay some attention here here.
 
-Bunyan - 50k/s json
-qlogger - 150k/s json, 650k/s text
+[Bunyan](https://npmjs.org/package/bunyan) - 50k/s json
+<br>
+[qlogger](https://npmjs.org/package/qlogger) - 150k/s json, 650k/s text
