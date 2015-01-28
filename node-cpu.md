@@ -37,12 +37,13 @@ for a fast multiuser-safe logger.)
 Child Processes
 ---------------
 
-An alternat
-
 If the blocking computation can be isolated, it can be serialized and
 sent to a [child_process](https://www.nodejs.org/lib/child_process.html)
 to process it.  There are node packages to simplify the implementation,
 eg [worker-farm](https://www.npmjs.org/package/worker-farm').
+
+Note that serializing node objects can itself be cpu-intensive; that's a
+harder one to solve.
 
 
 Refactor
