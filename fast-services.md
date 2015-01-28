@@ -61,7 +61,7 @@ Logging
 
 Not all logging is created alike.  Logging can consume 20% or more of the time
 used by a lean service (espcially json logging; `JSON.stringify` is slow), so
-it is important to pay some attention here here.
+it is important to pay some attention here.
 
 [Bunyan](https://npmjs.org/package/bunyan) - 50k/s json
 <br>
