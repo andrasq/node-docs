@@ -36,7 +36,8 @@ exceed 20k/s.
 Not all parts of the system libraries are equally fast.  Sometimes trying a
 different approach can be illuminating.
 
-**Read, don't listen.**  A node web server must read the request body, which can be
+**Getting the request:  Read, don't listen.**
+A node web server must read the request body, which can be
 done with read() or on().  There is no end-of-file indicator, however; the 'end'
 event must be listened for, so the data is typically consumed with another
 listen `res.on('data')`.  This can be a mistake -- it turns out that with
@@ -47,7 +48,8 @@ than if listening for it.  So try a few alternates.
           res.on('data')        19k/s           consume body, echo string
           res.read()            24.5k/s         consume body, echo string (v0.10.29)
 
-**Be lazy, check first.** Similarly, decoding the query parameters `a=1&b=2&c=3`
+**Decoding params: Be lazy, check first.**
+Similarly, decoding the query parameters `a=1&b=2&c=3`
 requires url-decoding all names and values.  The average speed of the node
 built-in `decodeURIComponent` is greatly increased with the simple work-around
 of pre-testing strings for whether they contain any encoded characters.  Since
@@ -59,10 +61,10 @@ speeds can be increased by an order of magnitude this way (.85m/s to 7.3m/s).
 **Not all fast is created alike.**  REST APIs pass parameters embedded in the
 request path.  Node can loop over the request paths and can match the route
 and extract the path params in a single go with regular expressions very
-quickly (5m tests/s / num routes).  Fixed routes with an appended query string
-can be implemented as a much faster hash lookup (42m/s).  An app with 25
-routes can only map 5m / 25 * 2 = 400k/sec paths on average; the static lookup
-can decode 1m/sec sets of 3 query params per call.  The winner: with 25 routes,
+quickly (4m tests/s / num routes).  Fixed routes with an appended query string
+can be implemented as a much faster hash lookup (20m/s).  An app with 20
+routes can map 4m / (20 / 2) = 400k/sec paths on average; the static lookup
+can decode 1m/sec sets of 3 query params per call.  The winner: with 20 routes,
 static routes with the slow parameter decode.
 
         /echo?a=1&b=2           19.9k/s
@@ -77,14 +79,23 @@ regex matches; fewer params favor static routes.
         /1/2/3/4/5/echo         19.4k/s         1st route
         /1/2/3/4/5/echo         18.5k/s         11th route
 
+### and of course, JSON params
+
+WRITEME: surprisingly enough, given the tightly joined nature of json and
+javascript, decoding json parameters is slow.
+
 ### structs vs hashes
 
-**Structs are fast, hashes are slow.**  An object constructed with `new` or as a
+**Use structs.  Structs are fast, hashes are slow.**
+An object constructed with `new` or as a
 literal object `{ ... }` will be made a struct; existing fields and methods
 accessed with direct lookups and all will be well and fast.
 
 Adding fields to an object can flip it from struct to hash; this can manifest as
 a drop in throughput of eg 30%.
+
+Using `new` constructor instances is good, they will be created as optimized
+structs and will be fast to access.
 
 ### socket.write()
 
