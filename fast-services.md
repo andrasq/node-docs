@@ -51,7 +51,7 @@ Http.request
 
 Node v0.10 does not always reuse connections for back-to-back requests.  Using
 a custom [http.Agent](http://nodejs.org/api/http.html#http_class_http_agent)
-like [http-agent](http://www.npmjs.org/package/http-agent) can boost
+like [agentkeepalive](http://www.npmjs.org/package/agentkeepalive) can boost
 throughput by better reusing existing connections.  Node v0.11 and up have
 started to address this issue, and seems fully fixed in iojs-1.0.1.
 
