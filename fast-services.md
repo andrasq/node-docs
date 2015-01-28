@@ -34,8 +34,9 @@ As an example, some throughput comparisons for `wrk -d8s -t2 -c8 http://localhos
 - [restiq](https://www.npmjs.org/package/restiq) - 21.5k/s "smaller, lighter, faster"
 
 The difference between 4600 and 21500 calls / second can translate into a
-50-80% real-world difference in non-trivial production services (12 middleware
-steps, mongodb access, and extensive call logging).
+40-80% real-world difference in non-trivial production services (12 middleware
+steps, mongodb access, and extensive call logging) -- 40% over a single socket,
+77% over 128 connections.
 
 \* hapi is limited to 25 calls/sec per connection, and though it is helped by
   TCP_NODELAY (`setNoDelay()` raises it to 1.8k/s), it's not clear if this is

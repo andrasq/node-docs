@@ -32,9 +32,10 @@ Notes
   closures that bind global variables
 - binding variables with a closure is comparable in speed to (slightly
   faster than) passing function parameters.  Which is actually faster
-  varies; if it matters, time it
+  varies; if it's important, time it
 
 - do not pass `arguments` to other functions, it disables optimization.
+  This includes the often seen `Array.prototype.slice.call(arguments, 0)`.
   (It is safe to do, though; in node-v0.10.29 it does not leak memory)
 - do not `try / catch` in tight inner loops, it disables optimization
 - do not build closures in tight inner loops, some closures are expensive
@@ -63,6 +64,7 @@ Notes
 
 - iterate arrays from 0 to length
 - push, do not append by index, it's 2x faster
+- do not access undefined elements past the end of the array
 - do not preallocate large arrays, growing them on demand is 2x faster
 - allocate arrays meant to grow with new Array().  push() into a `new Array`
   is 3x faster than into `[]`.
@@ -191,7 +193,7 @@ but v0.11.13 is slower overall on setImmediate than v0.10.29.
 
 Accessing event loop from inside node is kind of slow.  v0.10.29 can launch
 2.5 million events / second; v0.11.13 can launch 1 million.  Since each
-setTimeout, each continuation, eac i/o action queues an event, that can cap
+setTimeout, each continuation, each i/o action queues an event, that can cap
 throughput at 1 million continuations / second.  In practice, the default node
 setTimeout and setImmediate functions limit this even more.
 
@@ -238,6 +240,10 @@ high performance.
 - iterating over hash keys (traversing objects) is comparatively slow (10m
   keys/s), and this affects any code that has to process hash contents, eg
   Object.keys() and JSON.stringify()
+
+- obtaining hash keys is slow even if not iterated; breaking out of the loop
+  on the first key is not much faster than looping through all of them.  The
+  cost is in getting the keys list, not in iterating
 
 - input/output of node objects is slow, because JSON.stringify() is slow (4m
   fields/sec), ultimately because iterating objects is slow
