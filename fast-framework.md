@@ -21,10 +21,10 @@ Some fundamental limits:
 It is good to have an understanding of the limits of the system.  For node
 services built on top of [http](https://www.nodejs.org/api/http.html), the
 limit is that of http itself.  Here that meant 27k hello-world requests served
-/ second.  `net.createServer()` can do 45k/s, but I was willing to trade off
+/ second.  `net.createServer()` can do 57k/s, but I was willing to trade off
 peak throughput for the convenience of the built-in HTTP handling.
 
-        net.createServer        45k/s           echo "Hello, world." string
+        net.createServer        57k/s           echo "Hello, world." string
         http.createServer       27k/s           echo string
 
 This is a guaranteed-not-to-exceed limit, but it can not be reached for
