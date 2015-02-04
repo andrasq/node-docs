@@ -21,7 +21,8 @@ processes, each process serving requests sent to the same host:port address.
 A team of such processes is referred to as a cluster.
 
 A cluster is created with `require('cluster')` and `if (cluster.isMaster)
-cluster.fork()`.  Each fork() creates a server process.  If all the forked
+{ cluster.fork() }`.  Each fork() creates a server process running the same script,
+but with cluster.isMaster set to false.  If all the forked
 processes listen to the same network port, the incoming connections will be
 distributed among them.
 
