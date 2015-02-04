@@ -2,11 +2,14 @@ Running Cpu-Instensive Jobs on Nodejs
 =====================================
 
 Blocking the event loop.  It's frowned upon.  It's anti-social.  Yet sometimes
-it's necessary.  Here are some ways of dealing with them.
+it's necessary.  Here are some ways of dealing with blocking computations.
 
 
 Clusters
 --------
+
+The easiest is to run multiple copies of the server code, even on the
+same system.  Node makes this simple.
 
 Node does not preempt a running computation, but the operating system does, in
 units of threads or processes.  System processes do not block each other, they
@@ -37,6 +40,9 @@ for a fast multiuser-safe logger.)
 Child Processes
 ---------------
 
+If several identical server processes is not suitable, node also
+provides hooks to delegate work to helper processes.
+
 If the blocking computation can be isolated, it can be serialized and
 sent to a [child_process](https://www.nodejs.org/lib/child_process.html)
 to process it.  There are node packages to simplify the implementation,
@@ -53,10 +59,14 @@ Refactor
 
 One contributor to blocking behavior is the JSON.stringify built-in.  JSON
 string handling is relatively slow in node.  It can be re-implemented in
-javascript and made non-blocking, however, at a fairly moderate overhead cost.
+javascript and made non-blocking, however, at a fairly moderate overhead.
 See [json-simple](https://www.npmjs.org/package/json-simple) for the basic
 structure.
 
-The corresponding JSON.parse can also be a problem, but that is less easy to
-rewrite.
+### JSON.parse
 
+There are streaming JSON parser modules for nodejs, both written in JavaScript
+as well as C++.  See for example [i-json](https://npmjs.org/package/i-json)
+(C++) and [jsonparse](https://npmjs.org/package/jsonparse) (js). (Note that
+jsonparse can enter an infinite loop when parsing strings containing non-utf8
+characters.)
