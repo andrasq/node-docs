@@ -40,7 +40,10 @@ the servers via environment, eg
 By running a cluster, the probability of all being blocked is decreased,
 helping the _average_ response time stay fast.  (Any individual request can
 still block behind another, but it will be less likely to do so.)  The larger
-the cluster, the lower the chance of a request blocking.  The size of the
+the cluster, the lower the chance of a request blocking.  The operating system
+balances the available cpus among all running server processes, so a blocked
+request in one process will not prevent other processes from completing requests.
+There is no preset limit on the number of processes; the practical size of the
 cluster is bounded only by memory.
 
 Clustered services need to be sure to use multi-use safe packages, eg logging.
