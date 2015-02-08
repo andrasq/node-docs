@@ -93,7 +93,7 @@ complete, but that's always going to be the case. By picking from across users
 then jobtypes the responsiveness of the job processing system as a whole will
 not be adversely impacted.
 
-There are lots of secondary restrictions that can be added (e.g., no
+There are lots of secondary restrictions that can be added on (e.g., no
 more than 5 calls per second to linkedin), but the above is the heart
 of the system.
 
