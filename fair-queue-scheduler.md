@@ -88,9 +88,9 @@ a two-level scheduler, and randomly choose users and from those users
 choose jobs. That will distribute the resources among users equally,
 and within each user's jobs equally among the jobtypes.
 
-A huge number of jobs of a particular jobtype will take a long time to
-all complete, but that's always going to be the case. By picking from
-across users then jobtypes the responsiveness of the job processing will
+A huge number of jobs of a particular jobtype will take a long time to all
+complete, but that's always going to be the case. By picking from across users
+then jobtypes the responsiveness of the job processing system as a whole will
 not be adversely impacted.
 
 There are lots of secondary restrictions that can be added (e.g., no
