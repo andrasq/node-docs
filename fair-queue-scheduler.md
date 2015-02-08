@@ -5,6 +5,34 @@ This was originally written in response to a
 [stackoverflow.com question](http://stackoverflow.com/questions/28388281/job-scheduling-algorithm-for-cluster/28389114#28389114)
 asking about job queue scheduling
 
+> *Job scheduling algorithm for clusterup vote*
+> 
+> I'm searching for algorithm suitable for problem below:
+> 
+> There are multiple computers(exact number is unknown). Each computer pulls
+> job from some central queue, completes job, then pulls next one. Jobs
+> are produced by some group of users. Some users submit lots of jobs, some
+> a little. Jobs consume equal CPU time(not really, just approximation).
+> 
+> Central queue should be fair when scheduling jobs. Also, users who
+> submitted lots of jobs should have some minimal share of resources.
+> 
+> I'm searching a good algorithm for this scheduling.
+> 
+> Considered two candidates:
+> 
+> 1. Hadoop-like fair scheduler. The problem here is: where can I take
+> minimal shares here when my cluster size is unknown?
+> 
+> 2. Associate some penalty with each user. Increment penalty when user's
+> job is scheduled. Use probability of scheduling job to user as 1 -
+> (normalized penalty). This is something like stride scheduling, but I
+> could not find any good explanation on it.
+> 
+> scrat
+> 491 7 19 
+
+----------------------------------------------------------------
 
 When I implemented a very similar job runner (for a production system),
 I ended having each server up choose jobtypes at random. This was my
