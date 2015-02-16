@@ -205,11 +205,13 @@ Notes
 
 - See [qtimers](https://www.npmjs.org/package/qtimers) for a 10x faster
   drop-in replacement.
+- node-v0.12 and iojs-1.0.1 are slow like v0.11, both much slower than v0.10,
+  seemingly because of internal v8 changes.
 
 ### Http.Agent
 
 Connection reuse in http.Agent (an internal part of http.request) is kind of
-broken, and consequently slow.
+broken, and consequently slow.  Fixed in iojs-1.0.1 and node-v0.12.
 
 Notes
 
@@ -229,7 +231,19 @@ Notes
   There is no upper bound on the total connection pool size.  With the default
   limit of 5, with 10 different urls accessed, means 50 sockets can be held
   open concurrently.
+- See [agentkeepalive](http://www.npmjs.org/package/agentkeepalive) for a
+  drop-in replacement agent that correctly implements connection reuse.
 
+### File I/O
+
+Notes
+
+- node file and stream `read` and `write` pass through to the underlying
+operating system.  Writing many small items runs much faster if combined in
+node into bigger chunks and written with fewer calls.
+- use line-oriented batching file readers / writers like
+[qfgets](https://npmjs.org/package/qfgets) and
+[qfputs](https://npmjs.org/package/qfputs).
 
 The Achilles Heels
 ------------------
