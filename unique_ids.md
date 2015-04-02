@@ -34,8 +34,8 @@ For some uses (eg database primary keys, user ids) uniqueness must be
 guaranteed.  Uniqueness can be implemented by having id allocation be
 centralized, coordinated or delegated.  Delegated identity based on location,
 either physical or virtual, is called georgraphic addressing.  One obvious
-geographic addressing scheme is a hierarchy of domain-unique ids, eg hostname
-+ process-id + thread-id + unique-sequence-num.  The unique sequence number may
+geographic addressing scheme is a hierarchy of domain-unique ids, eg hostname +
+process-id + thread-id + unique-sequence-num.  The unique sequence number may
 be timestamped to allow sequence restarts.
 
 
