@@ -22,7 +22,7 @@ Simple and Fast
 If uniqueness is not an absolute requirement, the simplest is to generate a
 random string.  This is very fast, and for many uses (eg request ids, unit
 tests) is unique enough.  (It is limited to 8 hex digits:  the nodejs random
-number generator apparently returns 32-bit random numbers.)
+number generator apparently generates 64-bit random numbers.)
 
         Math.floor(Math.random() * 0x100000000 | 0).toString(16)
 
@@ -31,11 +31,12 @@ Guaranteed Unique
 -----------------
 
 For some uses (eg database primary keys, user ids) uniqueness must be
-guaranteed.  Uniqueness can be implemented by a central authority (eg Ethernet
-MAC addresses), or by some sort of geographic addressing.  A central authority
-acts as a global mutex.  Geographic addressing is a hierarchy of domain-unique
-ids, eg hostname + process-id + thread-id + unique-sequence-num.  The unique
-sequence number may be timestamped to allow sequence restarts.
+guaranteed.  Uniqueness can be implemented by having id allocation be
+centralized, coordinated or delegated.  Delegated identity based on location,
+either physical or virtual, is called georgraphic addressing.  One obvious
+geographic addressing scheme is a hierarchy of domain-unique ids, eg hostname
++ process-id + thread-id + unique-sequence-num.  The unique sequence number may
+be timestamped to allow sequence restarts.
 
 
 Mongoid
@@ -85,6 +86,9 @@ The implementation, in essence:
             return s;
         }
 
+Speed
+-----
+
 The above is good for 690k ids / second (100k ids in 144 ms), already very
 competitive with many unique id packages available for nodejs.  But we can
 easily do better.
@@ -119,8 +123,8 @@ something to reuse here too... and there is.  If we think about it, almost all
 changes to the sequence id are to the least significant digit.
 By retaining the sequence prefix and appending just the last digit, we can
 generate 10 million unique ids in .7 seconds -- 14 million ids per second!
-This is more than half the rate achieved by the most minimal random string
-generator, `(Math.random() * 0x100000000).toString(16)`, mentioned above.
+This is more than half the rate achieved by the Math.random generator
+mentioned above, but with guaranteed unique ids.
 
         var machineIdStr = hexFormat(Math.random() * 0x1000000 | 0, 6);
         var processIdStr = hexFormat(process.pid, 4);
@@ -156,8 +160,8 @@ Even the first version of our code was faster than `BSON.ObjectID()`, and we
 were able to speed that up 20 x, from 690k/s to 1.1m/s to 2.7m/s to 14m/s.
 
 If we need to generate lots of unique ids (like when assigning ids to data
-collections), a small and extremely fast id generator like the above is very
-appealing.
+collections or tagging in-flight data), a small and extremely fast id
+generator like the above is very appealing.
 
 
 Related Work
