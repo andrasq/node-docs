@@ -106,7 +106,10 @@ calls.
 Conclusions
 -----------
 
-
+The event loop may be blocked in unexpected ways.  We suspected some delay for
+serializing the data (though there is no reason for it, the call could just as
+easily have implemented non-blocking serialization), but we were astounded at
+the difference between two different versions of the same library.
 
 On a side note, it turns out there are packages out there that do this, but it
 was literally faster to implement than to search for and download.
