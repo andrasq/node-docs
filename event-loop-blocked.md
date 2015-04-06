@@ -104,6 +104,9 @@ calls.
 
 After batching:
 
+        insert 10k 1.3.19                980ms   960ms  160ms
+        find 10k 1.3.19                 1910ms  1870ms  20ms
+
         insert 10k 1.4.33               5200ms  5030ms  250ms
         find 10k 1.4.33                 2820ms  2710ms  20ms
 
@@ -125,8 +128,8 @@ level, blocking went from 1500ms to 250ms, but because the api takes all the
 input in a single json and decodes it into an object atomically, blocking at
 the call level only dropped to 900ms.
 
-We will be looking at making argument decoding non-blocking next.
+Next we will be looking at making argument decoding less blocking.
 
-As a side note, it turns out there are packages out there that do measure
+As a side note, it turns out there are packages out there that measure
 blocking in node (using the same principle that we came up with), but this was
 literally faster to implement than to search for.
