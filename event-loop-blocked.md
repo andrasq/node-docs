@@ -102,6 +102,10 @@ The fix for `find` was simple, we specified a more reasonable `cursorSize()`
 than the default.  The fix for `insert` was to batch the inserts into multiple
 calls.
 
+After batching:
+
+        insert 10k 1.4.33               5200ms  5030ms  250ms
+        find 10k 1.4.33                 2820ms  2710ms  20ms
 
 Conclusions
 -----------
@@ -111,5 +115,18 @@ serializing the data (though there is no reason for it, the call could just as
 easily have implemented non-blocking serialization), but we were astounded at
 the difference between two different versions of the same library.
 
-On a side note, it turns out there are packages out there that do this, but it
-was literally faster to implement than to search for and download.
+Batching finds reduced blocking by an order of magnitude, at the cost of
+doubling the elapsed time.  This might be adjustable though batch size, but
+even if not, it moves the cost of large datasets to where it belongs, and does
+not penalize other calls.
+
+Batching inserts did not substantially reduce blocking.  At the database
+level, blocking went from 1500ms to 250ms, but because the api takes all the
+input in a single json and decodes it into an object atomically, blocking at
+the call level only dropped to 900ms.
+
+We will be looking at making argument decoding non-blocking next.
+
+As a side note, it turns out there are packages out there that do measure
+blocking in node (using the same principle that we came up with), but this was
+literally faster to implement than to search for.
