@@ -66,13 +66,12 @@ the maximum elapsed time since the last run.
         }
         setTimeout(latencyTimer, 5);
 
+We wanted to keep it simple, so the maximum is tracked in a module variable,
+which makes checking and resetting simple.
 The check the longest blocked duration, look at maxBlockedMs.  To reset the
 measurement, set maxBlockedMs = 0.  To not have the script loading time throw
 off the measurements, the intervals are auto-initialized from inside the timer
 function.
-
-We wanted to keep it simple, so the maximum is tracked in a module variable,
-which makes checking and resetting simple.
 
 The timer interval is 5ms to not impose a cpu burden on the host.  The unit
 test starts the timer, letting the test runner kill it when the test file is
