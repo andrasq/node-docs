@@ -10,7 +10,7 @@ simple design approach to work around the issue.
 
 ## The Problem
 
-The app that started this line of thinking published messages to RabbitMQ via
+The app that started this investigation published messages to RabbitMQ via
 TCP/IP and AMQP.  This worked ok, but periodically the app would start
 crashing, not responding to requests and losing the messages that were needed
 to maintain consistency.
@@ -20,8 +20,8 @@ to maintain consistency.
 
 Investigating, turned out RabbitMQ would periodically become non-responsive,
 which caused AMQP to not be able to connect and to die with an error.  Due to
-this hidden coupling, a non-critical resource from two services away was
-crashing the public-facing app.
+this hidden coupling, a non-critical internal resource two services away was
+crashing the high-visibility public-facing app.
 
 The situation, in the abstract:
 
@@ -29,6 +29,10 @@ The situation, in the abstract:
 - queues build and back up through the connection
 - connections fill up, resources are consumed, new connections error out
 - app crashes or must discard data to protect itself
+
+This type of coupling can exist between an app and its supporting services,
+the app and any external services, or the internal services themselves, each
+one a latent source of delays or errors.
 
 
 ## The Solution
