@@ -52,7 +52,7 @@ Ignoring errors is not always possible.  A best general solution would be
 - very low overhead
 - scalable (distributed, no centralization)
 
-Conceptually, it would be nice if could just insert a high-bandwidth, high
+Conceptually, it would be nice if one could just insert a high-bandwidth, high
 capacity channel between every producer and every consumer, one that grows to
 fit as much data as needed, shrinks to not consume resources when idle, is
 durable, has little overhead, at no cost when not used.
@@ -74,6 +74,7 @@ Files are Great
 - grows and shrinks as needed, system reclaims resources
 - most optimized use cases are append and in-order read
 - essentially no cost in the expected case (when lightly used, one small file)
+- aggregating data allows for more efficient bulk transport and bulk processing
 
 Newline Terminated Text is Great
 
@@ -103,12 +104,12 @@ Benefits
 
 ## Conclusions
 
-We never did find out what caused RabbitMQ to hang.  From anecdotal evidence,
-other installations were still experiencing the same problem years afterward.
-
 The solution to the RabbitMQ problem above decoupled the app from AMQP (and
-thus RabbitMQ) by journaling the messages into a file, and inserting from the
-file.
+thus RabbitMQ) by saving the messages into a file, and inserting from the file.
+
+We never did find out what caused the RabbitMQ hangs.  From anecdotal
+evidence, newer RabbitMQ versions running elsewhere were still experiencing
+similar problems years afterward.
 
 
 ## Credits
