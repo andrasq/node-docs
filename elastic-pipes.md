@@ -58,33 +58,36 @@ a network of services might need to be decoupled from its neighbor.
 
 ## Design
 
-Not a pipe dream!  Use a journal file.
+Not a pipe dream!  Use a journal file:  append newline terminated strings, and
+periodically process the journal, replacing it with a new empty file.
 
 Files are Great
 
 - unlimited capacity (disk space is one of the most plentiful resources on a
   system)
-- grows and shrinks as needed, system reclaims resources
-- most optimized codepaths are append and in-order read
 - very high bandwidth (buffered and cached by the operating system, small
   bursts are near-memory speed)
+- grows and shrinks as needed, system reclaims resources
+- most optimized use cases are append and in-order read
 - essentially no cost in the expected case (when lightly used, one small file)
 
-Text is Great
+Newline Terminated Text is Great
 
-- newline terminated text
-  - simple, fast, efficient, universal
-  - wealth of tools to manipulate
+- very simple, very fast
+- universal
+- wealth of tools to manipulate
 
-Usage Policy
+Usage Convention
 
-- app appends to journal file the data it would have sent directly, tagged
-  with a unique id.  Appends use LOCK_EX to allow multiple writers.
-- separate thread reads journal file and sends data to internal service
-  - rename journal to cease appends (app starts appending to new journal)
-  - upload old journal file and remove it
+- app serializes and appends to journal file the data it would have sent
+  directly, tagged with a unique id.  Appends use LOCK_EX to allow multiple
+  writers.
+- separate thread reads the journal file and sends data to internal service
+  - rename journal to cease appends (app creates new journal file to append to)
+  - upload old journal file contents
+  - remove old journal file
   - repeat
-  - (if previous journal file exists, re-send it first)
+  - (if a previous old journal file already exists, upload it first, then repeat)
 
 Benefits
 
