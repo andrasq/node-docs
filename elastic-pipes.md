@@ -38,40 +38,48 @@ services that are not required for the results.  One way to decouple is to
 make the access optional (ignore errors).  Another is to make accesses
 asynchronous, and retry on errors.
 
-Ignoring errors is not an option in all cases.  A general solution would
-ideally be
+Ignoring errors is not always possible.  A best general solution would be
 
 - available (never block the sender)
 - durable (once sent, will not be lost)
 - load tolerant (not grind to a halt when the system is busy)
 - simple (easy format to work with)
-- fast (low overhead)
+- very fast
+- very low overhead
 - scalable (distributed, no centralization)
 
+Conceptually, it would be nice if could just insert a high-bandwidth, high
+capacity channel between every producer and every consumer, one that grows to
+fit as much data as needed, shrinks to not consume resources when idle, is
+durable, has little overhead, at no cost when not used.
+
+And the solution should also be space- and time-efficient, since each link in
+a network of services might need to be decoupled from its neighbor.
 
 ## Design
 
-Conceptually, it would be nice if could insert a high-bandwidth, high capacity
-pipe between the producer and consumer that is durable, can buffer unbounded
-amounts of data and has no overhead.  Not a pipe dream -- use a journal file.
+Not a pipe dream!  Use a journal file.
 
 Files are Great
 
 - unlimited capacity (disk space is one of the most plentiful resources on a
   system)
-
+- grows and shrinks as needed, system reclaims resources
+- most optimized codepaths are append and in-order read
 - very high bandwidth (buffered and cached by the operating system, small
   bursts are near-memory speed)
+- essentially no cost in the expected case (when lightly used, one small file)
+
+Text is Great
 
 - newline terminated text
   - simple, fast, efficient, universal
   - wealth of tools to manipulate
 
-Approach
+Usage Policy
 
 - app appends to journal file the data it would have sent directly, tagged
   with a unique id.  Appends use LOCK_EX to allow multiple writers.
-
 - separate thread reads journal file and sends data to internal service
   - rename journal to cease appends (app starts appending to new journal)
   - upload old journal file and remove it
