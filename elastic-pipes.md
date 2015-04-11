@@ -86,7 +86,7 @@ Files are Great
 - very high bandwidth (buffered and cached by the operating system, small
   bursts are near-memory speed)
 - grows and shrinks as needed, system reclaims resources
-- most optimized use cases are append and in-order read
+- most highly optimized use cases are append and in-order read
 - essentially no cost in the expected case (just one small file)
 - aggregating data allows for more efficient bulk transport and bulk processing
 
@@ -120,8 +120,8 @@ Run-Time Usage
 
 ## Implementation
 
-A more generalized form of this approach (newline delimited text as high speed
-data transport) was first coded in PHP [2].
+A more generalized version of this approach (newline delimited text as high
+speed data transport) was first coded in PHP [2].
 
 High-speed nodejs line streaming is available via the qfputs and qfgets
 packages [3], as is very high throughput guaranteed unique id generation [4].
