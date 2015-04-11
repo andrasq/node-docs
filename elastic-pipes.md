@@ -3,9 +3,9 @@ Elastic Pipes
 **Simple Fix for Cross-Service Dependencies**
 
 
-Trying to untangle your service from blocking dependencies on internal
+Trying to untangle a service from blocking dependencies on internal
 micro-services that are not available when trying to hand off data?  Here's a
-simple design approach to work around the issue.
+simple design approach to avoid the issue.
 
 
 ## The Problem
@@ -38,11 +38,26 @@ one a latent source of delays or errors.
 ## The Solution
 
 The key insight is the word "coupling."  Apps should decouple access to
-services that are not required for the results.  One way to decouple is to
-make the access optional (ignore errors).  Another is to make accesses
-asynchronous, and retry on errors.
+services that are not required for the results.
 
-Ignoring errors is not always possible.  A best general solution would be
+Quoting:
+
+> The solution is to interpose a low-latency elastic store between every
+> production and consumption point at every stage of the transmission pipeline.
+> This eliminates blocking, and also exposes the messages to batching, boosting
+> throughput.
+>
+> The original idea gelled when we [...] started seeing blanks in the graphs:  a
+> direct end-to-end data delivery system does not tolerate delays and does not
+> scale.  Instead, data needs to be aggregated and delivered in batches.  Statsd
+> and Ganglia use this same principle.
+
+
+One way to decouple is to is to make accesses asynchronous, and retry on
+errors.  Another is to make the access optional (ignore errors, though
+ignoring errors is not always possible).
+
+A good general solution should be
 
 - available (never block the sender)
 - durable (once sent, will not be lost)
@@ -114,5 +129,5 @@ similar problems years afterward.
 
 ## Credits
 
-The design outlined in this article is based in part on an unpublished 2012
-whitepaper and the php [Quick](http://github.com/andrasq/quicklib) library.
+The design outlined in this article is based in part on an unpublished Jan
+2012 whitepaper and the [Quicklib](http://github.com/andrasq/quicklib) library.
