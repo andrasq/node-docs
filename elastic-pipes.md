@@ -1,7 +1,7 @@
 Elastic Pipes
 =============
-**Simple Fix for Cross-Service Dependencies**
-
+**Simple Fix for Cross-Service Dependencies**<br>
+*2015-04-10 Andras Radics*
 
 Trying to untangle a service from blocking dependencies on internal
 micro-services that are not available when trying to hand off data?  Here's a
@@ -18,40 +18,27 @@ to maintain consistency.
 
 ## Analysis
 
-Investigating, turned out RabbitMQ would periodically become non-responsive,
-which caused AMQP to not be able to connect and to die with an error.  Due to
-this hidden coupling, a non-critical internal resource two services away was
-crashing the high-visibility public-facing app.
+Investigating, it turned out RabbitMQ would periodically become non-responsive,
+which caused AMQP to not be able to hand off messages and error out.  Due to
+this hidden coupling, a batch resource two services removed was breaking the
+high-visibility public-facing real-time app.
 
-The situation, in the abstract:
+The situation, in its essence:
 
 - unavailable resource blocks arriving requests
 - queues build and back up through the connection
 - connections fill up, resources are consumed, new connections error out
-- app crashes or must discard data to protect itself
+- app crashes or must lose data to protect itself
 
 This type of coupling can exist between an app and its supporting services,
-the app and any external services, or the internal services themselves, each
-one a latent source of delays or errors.
+between the app and any external services, or between the internal services
+themselves, each one a latent source of delays or errors.
 
 
 ## The Solution
 
 The key insight is the word "coupling."  Apps should decouple access to
 services that are not required for the results.
-
-Quoting:
-
-> The solution is to interpose a low-latency elastic store between every
-> production and consumption point at every stage of the transmission pipeline.
-> This eliminates blocking, and also exposes the messages to batching, boosting
-> throughput.
->
-> The original idea gelled when we [...] started seeing blanks in the graphs:  a
-> direct end-to-end data delivery system does not tolerate delays and does not
-> scale.  Instead, data needs to be aggregated and delivered in batches.  Statsd
-> and Ganglia use this same principle.
-
 
 One way to decouple is to is to make accesses asynchronous, and retry on
 errors.  Another is to make the access optional (ignore errors, though
@@ -80,6 +67,18 @@ a network of services might need to be decoupled from its neighbor.
 Not a pipe dream!  Use a journal file:  append newline terminated strings, and
 periodically process the journal, replacing it with a new empty file.
 
+As observed at the time [1],
+
+> The solution is to interpose a low-latency elastic store between every
+> production and consumption point at every stage of the transmission pipeline.
+> This eliminates blocking, and also exposes the messages to batching, boosting
+> throughput.
+>
+> The original idea gelled when we [...] started seeing blanks in the graphs:  a
+> direct end-to-end data delivery system does not tolerate delays and does not
+> scale.  Instead, data needs to be aggregated and delivered in batches.  Statsd
+> and Ganglia use this same principle.
+
 Files are Great
 
 - unlimited capacity (disk space is one of the most plentiful resources on a
@@ -88,7 +87,7 @@ Files are Great
   bursts are near-memory speed)
 - grows and shrinks as needed, system reclaims resources
 - most optimized use cases are append and in-order read
-- essentially no cost in the expected case (when lightly used, one small file)
+- essentially no cost in the expected case (just one small file)
 - aggregating data allows for more efficient bulk transport and bulk processing
 
 Newline Terminated Text is Great
@@ -97,7 +96,16 @@ Newline Terminated Text is Great
 - universal
 - wealth of tools to manipulate
 
-Usage Convention
+Benefits
+
+- app is never blocked waiting for a remote resource
+- if the remote service crashes, it delays the data but does not impact the app
+- if the app outpaces the remote service, it delays the data but does not slow the app
+- if there are transmission errors, retry and de-dup on the unique id
+- the journal file can be shipped to a central location for bulk ingestion
+- simple stats easily available from the command line (data type, data volume, size of backlog)
+
+Run-Time Usage
 
 - app serializes and appends to journal file the data it would have sent
   directly, tagged with a unique id.  Appends use LOCK_EX to allow multiple
@@ -109,13 +117,13 @@ Usage Convention
   - repeat
   - (if a previous old journal file already exists, upload it first, then repeat)
 
-Benefits
 
-- app is never blocked waiting for a remote resource
-- if the remote service crashes, it delays the data but does not impact the app
-- if the app outpaces the remote service, it delays the data but does not slow the app
-- if there are transmission errors, retry and de-dup on the unique id
-- the journal file can be shipped to a central location for bulk ingestion
+## Implementation
+
+A more elaborate version of this approach (newline delimited text as high speed
+data transport) is available written in PHP [2].  High-speed nodejs file i/o
+packages are available in the qfputs and qfgets packages [3].
+
 
 ## Conclusions
 
@@ -124,10 +132,11 @@ thus RabbitMQ) by saving the messages into a file, and inserting from the file.
 
 We never did find out what caused the RabbitMQ hangs.  From anecdotal
 evidence, newer RabbitMQ versions running elsewhere were still experiencing
-similar problems years afterward.
+similar problems years later.
 
 
-## Credits
+## References
 
-The design outlined in this article is based in part on an unpublished Jan
-2012 whitepaper and the [Quicklib](http://github.com/andrasq/quicklib) library.
+[1] Andras Radics, Jan 2012 memorandum (unpublished)<br>
+[2] `Quick_Fifo_Reader` and `Quick_Fifo_Writer` in [Quicklib](https://github.com/andrasq/quicklib)<br>
+[3] [qfputs](https://npmjs.org/package/qfputs) and [qfgets](https://npmjs.org/package/qfgets)<br>
