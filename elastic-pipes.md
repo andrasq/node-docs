@@ -123,9 +123,8 @@ Run-Time Usage
 A more generalized form of this approach (newline delimited text as high speed
 data transport) was first coded in PHP [2].
 
-High-speed nodejs line streaming packages are available in the qfputs and
-qfgets packages [3], along with a very high throughput guaranteed unique id
-package [4].
+High-speed nodejs line streaming is available via the qfputs and qfgets
+packages [3], as is a very high throughput guaranteed unique id generation [4].
 
 
 ## Conclusions
