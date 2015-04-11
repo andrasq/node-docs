@@ -120,6 +120,32 @@ Run-Time Usage
 
 ## Implementation
 
+Formatting the data
+
+- convert the data into a byte string that does not contain "\n" newlines.
+  Technically, binary data is ok as long as it does not contain newlines,
+  but the system has impose secondary restrictions (eg, javascript expects
+  all text to be valid utf8)
+- terminate the string with a newline
+
+Appending the journal
+
+- if last append was more than .05 seconds ago, reopen the journal file
+- if a write is currently in progress, just buffer text, otherwise
+- flock(fd, LOCK_EX)
+- write buffered text + text
+- flock(fd, LOCK_UN)
+
+Consuming the journal
+
+- if journal.old exists, process it
+- rename journal to journal.old
+- wait .05 seconds for write activity to cease.  After .05 seconds
+  the appenders will all have switched to writing the new journal
+- read each newline-terminated line from journal.old
+  - deserialize the data
+  - process
+
 A more generalized version of this approach (newline delimited text as high
 speed data transport) was first coded in PHP [2].
 
