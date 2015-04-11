@@ -101,7 +101,7 @@ Benefits
 - app is never blocked waiting for a remote resource
 - if the remote service crashes, it delays the data but does not impact the app
 - if the app outpaces the remote service, it delays the data but does not slow the app
-- if there are transmission errors, retry and de-dup on the unique id
+- if there are transmission errors, retry and de-dup on a unique id
 - the journal file can be shipped to a central location for bulk ingestion
 - simple stats easily available from the command line (data type, data volume, size of backlog)
 
@@ -120,9 +120,12 @@ Run-Time Usage
 
 ## Implementation
 
-A more elaborate version of this approach (newline delimited text as high speed
-data transport) is available written in PHP [2].  High-speed nodejs file i/o
-packages are available in the qfputs and qfgets packages [3].
+A more generalized form of this approach (newline delimited text as high speed
+data transport) was first coded in PHP [2].
+
+High-speed nodejs line streaming packages are available in the qfputs and
+qfgets packages [3], along with a very high throughput guaranteed unique id
+package [4].
 
 
 ## Conclusions
@@ -140,3 +143,4 @@ similar problems years later.
 [1] Andras Radics, Jan 2012 memorandum (unpublished)<br>
 [2] `Quick_Fifo_Reader` and `Quick_Fifo_Writer` in [Quicklib](https://github.com/andrasq/quicklib)<br>
 [3] [qfputs](https://npmjs.org/package/qfputs) and [qfgets](https://npmjs.org/package/qfgets)<br>
+[4] [mongoid-js](https://npmjs.org/package/mongoid-js)
