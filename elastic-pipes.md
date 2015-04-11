@@ -55,7 +55,7 @@ A good general solution should be
 - scalable (distributed, no centralization)
 
 Conceptually, it would be nice if one could just insert a high-bandwidth, high
-capacity channel between every producer and every consumer, one that grows to
+capacity channel between every producer and consumer, one that grows to
 fit as much data as needed, shrinks to not consume resources when idle, is
 durable, has little overhead, at no cost when not used.
 
