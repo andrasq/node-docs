@@ -1,6 +1,6 @@
 Elastic Pipes
 =============
-**Simple Fix for Cross-Service Dependencies**<br>
+**Simple Fix for Unblocking Cross-Service Data Flows**<br>
 *2015-04-10 Andras Radics*
 
 Trying to untangle a service from blocking dependencies on internal
@@ -125,7 +125,7 @@ Formatting the data
 
 - convert the data into a byte string that does not contain "\n" newlines.
   Technically, binary data is ok as long as it does not contain newlines,
-  but the system has impose secondary restrictions (eg, javascript expects
+  but the system might have secondary restrictions (eg, javascript expects
   all text to be valid utf8)
 - terminate the string with a newline
 
