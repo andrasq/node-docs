@@ -168,8 +168,8 @@ to start, and truncates it.  The steps are
 - copy the still unprocessed contents to the start of the file
 - if more content arrived while copying, copy that too, as long as it fits
 - lock the file with an exclusive write lock, flock(LOCK_EX)
-- if yet more content arrived, decide whether to copy it too or to abort,
-  unlock and try later
+- if yet more content arrived, decide whether to copy it now or to abort
+  and unlock to try later
 - truncate the file and unlock
 
 The above was described in [1], and is implementated in Quicklib as
