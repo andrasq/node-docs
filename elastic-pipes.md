@@ -157,14 +157,14 @@ packages [3], as is very high throughput guaranteed unique id generation [4].
 
 If renaming the file is not an option (eg write-protected directory), a
 streaming many-writers single-reader fifo journal can be implemented inside a
-single file by periodically compacting the journal.  The appenders do not
-change, they continue as before, writing lines under a momentary write lock.
+single file by periodically compacting the journal.  The writers do not
+change, they continue as before, appending lines under a momentary write lock.
 The reader, however, at suitable times copies the unprocessed tail of the file
 to start, and truncates it.  The steps are
 
 - check that there is "only a little" left unprocessed in the file, and that
   there is enough free (already processed) space at the front of the file to
-  hold it.  Check later if not
+  hold it.  Check back later if not
 - copy the still unprocessed contents to the start of the file
 - if more content arrived while copying, copy that too, as long as it fits
 - lock the file with an exclusive write lock, flock(LOCK_EX)
@@ -173,7 +173,7 @@ to start, and truncates it.  The steps are
 - truncate the file and unlock
 
 The above was described in [1], and is implementated in Quicklib as
-Quick_Fifo_FileCompactor [2].
+Quick\_Fifo\_FileCompactor [2].
 
 ## Conclusions
 
@@ -188,6 +188,6 @@ similar problems years later.
 ## References
 
 [1] Andras Radics, Jan 2012 memorandum (unpublished)<br>
-[2] `Quick_Fifo_Reader` and `Quick_Fifo_Writer` in [Quicklib](https://github.com/andrasq/quicklib)<br>
+[2] Quick\_Fifo\_Reader and Quick\_Fifo\_Writer in [Quicklib](https://github.com/andrasq/quicklib)<br>
 [3] [qfputs](https://npmjs.org/package/qfputs) and [qfgets](https://npmjs.org/package/qfgets)<br>
 [4] [mongoid-js](https://npmjs.org/package/mongoid-js)
