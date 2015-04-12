@@ -62,6 +62,7 @@ durable, has little overhead, at no cost when not used.
 And the solution should also be space- and time-efficient, since each link in
 a network of services might need to be decoupled from its neighbor.
 
+
 ## Design
 
 Not a pipe dream!  Use a journal file:  append newline terminated strings, and
@@ -152,6 +153,27 @@ speed data transport) was first coded in PHP [2].
 High-speed nodejs line streaming is available via the qfputs and qfgets
 packages [3], as is very high throughput guaranteed unique id generation [4].
 
+**Fifo Files**
+
+If renaming the file is not an option (eg write-protected directory), a
+streaming many-writers single-reader fifo journal can be implemented inside a
+single file by periodically compacting the journal.  The appenders do not
+change, they continue as before, writing lines under a momentary write lock.
+The reader, however, at suitable times copies the unprocessed tail of the file
+to start, and truncates it.  The steps are
+
+- check that there is "only a little" left unprocessed in the file, and that
+  there is enough free (already processed) space at the front of the file to
+  hold it.  Check later if not
+- copy the still unprocessed contents to the start of the file
+- if more content arrived while copying, copy that too, as long as it fits
+- lock the file with an exclusive write lock, flock(LOCK_EX)
+- if yet more content arrived, decide whether to copy it too or to abort,
+  unlock and try later
+- truncate the file and unlock
+
+The above was described in [1], and is implementated in Quicklib as
+Quick_Fifo_FileCompactor [2].
 
 ## Conclusions
 
