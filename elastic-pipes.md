@@ -172,7 +172,7 @@ to start, and truncates it.  The steps are
   and unlock to try later
 - truncate the file and unlock
 
-The above was described in [1], and is implementated in Quicklib as
+Fifo file compaction was described in [1], and is implementated in Quicklib as
 Quick\_Fifo\_FileCompactor [2].
 
 ## Conclusions
