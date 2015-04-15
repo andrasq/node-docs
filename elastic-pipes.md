@@ -129,6 +129,8 @@ Formatting the data
   all text to be valid utf8)
 - terminate the string with a newline
 
+        var dataString = JSON.stringify(dataObject) + "\n";
+
 Appending the journal
 
 - if last append was more than .05 seconds ago, reopen the journal file
@@ -136,6 +138,16 @@ Appending the journal
 - flock(fd, LOCK_EX)
 - write buffered text + text
 - flock(fd, LOCK_UN)
+
+        var QFputs = require('qfputs');
+        var fp = new QFputs('output/file/path');
+
+        fp.fputs(dataString);
+        ...
+
+        fp.fflush(function(err) {
+            // all done writing
+        });
 
 Consuming the journal
 
@@ -146,6 +158,38 @@ Consuming the journal
 - read each newline-terminated line from journal.old
   - deserialize the data
   - process
+
+        var fs = require('fs');
+        var QFgets = require('qfgets');
+        function consumeJournal( journalName, callback ) {
+            var oldJournal = journalName + '.old';
+            function grabOldJournal(cb) {
+                if (fs.existsSync(oldJournal)) return cb();
+                try { fs.renameSync(journalName, oldJournal); }
+                catch (err) { return cb(err); }
+                setTimeout(cb, 50);
+            }
+
+            fp = new QFgets(oldJournal);
+            function processJournalFile( ) {
+                for (var i=0; i<40; i++) {
+                    var line = fp.fgets();
+                    if (line) processLine(line);
+                    else break;
+                }
+                if (!fp.feof()) setTimeout(processJournalFile, 1);
+                else {
+                    // no more lines, clean up and return
+                    fs.unlinkSync(oldJournal);
+                    return callback();
+                }
+            }
+
+            grabOldJournal(function(err) {
+                if (err) return callback(err);
+                processJournalFile();
+            });
+        }
 
 A more generalized version of this approach (newline delimited text as high
 speed data transport) was first coded in PHP [2].
