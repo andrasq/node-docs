@@ -159,6 +159,8 @@ Consuming the journal
   - deserialize the data
   - process
 
+E.g.,
+
         var fs = require('fs');
         var QFgets = require('qfgets');
         function consumeJournal( journalName, callback ) {
