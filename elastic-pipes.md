@@ -113,6 +113,7 @@ Run-Time Usage
   writers.
 - separate thread reads the journal file and sends data to internal service
   - rename journal to cease appends (app creates new journal file to append to)
+  - assert a write lock to confirm appends finished
   - upload old journal file contents
   - remove old journal file
   - repeat
