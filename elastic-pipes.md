@@ -113,7 +113,6 @@ Run-Time Usage
   writers.
 - separate thread reads the journal file and sends data to internal service
   - rename journal to cease appends (app creates new journal file to append to)
-  - assert a write lock to confirm appends finished
   - upload old journal file contents
   - remove old journal file
   - repeat
@@ -152,10 +151,14 @@ Appending the journal
 
 Consuming the journal
 
-- if journal.old exists, process it
-- rename journal to journal.old
+- if journal.old exists, process it, else
+- rename journal to journal.old.  The appenders will create a new journal
+  if the old one disappears, and they check every .05 seconds.
 - wait .05 seconds for write activity to cease.  After .05 seconds
-  the appenders will all have switched to writing the new journal
+  the appenders will all have reopened a new journal file by the
+  original filename
+- assert a write lock.  The write lock will be granted when the current
+  write in progress (if any) finishes.
 - read each newline-terminated line from journal.old
   - deserialize the data
   - process
