@@ -157,8 +157,9 @@ Consuming the journal
 - wait .05 seconds for write activity to cease.  After .05 seconds
   the appenders will all have reopened a new journal file by the
   original filename
-- assert a write lock.  The write lock will be granted when the current
-  write in progress (if any) finishes.
+- assert a momentary write lock, `flock(LOCK_EX)` then `flock(LOCK_UN)`.
+  The write lock will be granted when the current write in progress (if
+  any) finishes.
 - read each newline-terminated line from journal.old
   - deserialize the data
   - process
