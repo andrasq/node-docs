@@ -5,10 +5,10 @@ One of the easiest fixes to intractable nodejs garbage collection delays is the 
 solution -- don't unravel the problem, cut right through it.  For nodejs services, this
 means seamlessly restarting the service.
 
-Luckily nodejs makes this easy with the the built-in `cluster` module.  With
-clusters, it's possible to create worker processes all running the same script as
-the master, and to share open file descriptors.  In fact, all calls to
-`net.listen()` automatically share the socket!
+Luckily nodejs makes this easy with the the built-in `cluster` module.
+With clusters, it's possible to create worker processes all running the
+same script, even sharing sockets.  In fact, all calls to `net.listen()`
+in a cluster automatically share the socket!
 
 The outline of the gc solution then, in a nutshell, is
 * create a cluster of 1 worker to run the service
@@ -22,9 +22,6 @@ until the next worker can accept them.
 
 Clusters
 --------
-
-Example
--------
 
 As a small example, consider an echo service that replies with its input:
 
@@ -46,9 +43,11 @@ The same echo service, in a cluster:
         var net = require('net');
 
         if (cluster.isMaster) {
+            // master creates one worker
             var child = cluster.fork();
         }
         else {
+            // the cluster runs the service just like before
             var server = net.createServer().listen(1337);
             server.on('connection', function(socket) {
                 socket.on('data', function(chunk) {
@@ -60,9 +59,9 @@ The same echo service, in a cluster:
             });
         }
 
-The cluster is two processes, the master and one worker.  Both the master and the
-worker start running the same script, but `cluster.isMaster` will be `true` only in the
-parent process.  Any number of worker processes can be forked, each is 
+The cluster here is two processes, the master and one worker.  Both the master and the
+worker run the same script, but `cluster.isMaster` will be `true` only in the parent
+process.  Any number of worker processes can be forked, each is
 
 ### The Master
 
