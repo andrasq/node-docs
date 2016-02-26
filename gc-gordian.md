@@ -38,52 +38,6 @@ new worker will get the incoming calls as soon as it starts listening for connec
 Use `process.memoryUsage()` to check how much memory is being used by the process.
 
 
-Signals
--------
-
-Clusters do not provide signal handling, each process fields its own.  Except for
-signals sent by the command interpreter (the shell) to process groups, signals that
-arrive at the master process affect only the master process.  For simple services this
-is adequate, since fatal signals sent to the master cause it to exit, which forces the
-workers to also exit.
-
-To provide more seamless threads-like control of clustered services, however, with
-suspend / resume, SIGHUP restart and SIGUSR2 signaling, it can be helpful to relay
-signals from the master to the workers.  This also allows each worker to save eg
-buffered data or cached state before exiting.
-
-To relay signals:
-
-        // array of forked child processes, in the parent
-        var children = [];
-
-        // send the named signal to all child processes
-        function relaySignal( signal ) {
-            for (var i = 0; i < children.length; i++) {
-                children[i].kill(signal);
-            }
-        }
-
-        // relay signals of interest
-        process.on('SIGTERM', function() { relaySignal('SIGTERM')  });
-        process.on('SIGINT', function() { relaySignal('SIGINT')  });
-        process.on('SIGHUP', function() { relaySignal('SIGHUP')  });
-        process.on('SIGUSR2', function() { relaySignal('SIGUSR2')  });
-
-Note that SIGKILL and SIGSTOP cannot be caught, hence cannot be relayed.  KILL abrutply
-terminates the master, causing all workers to immediately exit, which is the expected
-behavior.  SIGSTOP suspends only the master, but as a workaround SIGTSTP can be caught
-and relayed, also suspends the signaled process that isn't listening for it.  SIGCONT
-resumes a process suspended by SIGSTOP or SIGTSTP.
-
-        process.on('SIGTSTP', function() { relaySignal('SIGTSTP') });
-        process.on('SIGCONT', function() { relaySignal('SIGCONT') });
-
-Because the master has ignored these fatal signals (caught and relayed, but otherwise
-ignored), the master will exit only when the worker processes have exited, which is the
-desired behavior.
-
-
 Clusters
 --------
 
@@ -195,6 +149,52 @@ Note that `disconnect()` exits the child even though calls can be in progress, s
 explicit setTimeout delay loop may be required to allow them to finish.  Also note that
 if the parent exits the child will exit immediately, even if it has pending timeouts or
 events.
+
+
+Signals
+-------
+
+Clusters do not provide signal handling, each process fields its own.  Except for
+signals sent by the command interpreter (the shell) to process groups, signals that
+arrive at the master process affect only the master process.  For simple services this
+is adequate, since fatal signals sent to the master cause it to exit, which forces the
+workers to also exit.
+
+To provide more seamless threads-like control of clustered services, however, with
+suspend / resume, SIGHUP restart and SIGUSR2 signaling, it can be helpful to relay
+signals from the master to the workers.  This also allows each worker to save eg
+buffered data or cached state before exiting.
+
+To relay signals:
+
+        // array of forked child processes, in the parent
+        var children = [];
+
+        // send the named signal to all child processes
+        function relaySignal( signal ) {
+            for (var i = 0; i < children.length; i++) {
+                children[i].kill(signal);
+            }
+        }
+
+        // relay signals of interest
+        process.on('SIGTERM', function() { relaySignal('SIGTERM')  });
+        process.on('SIGINT', function() { relaySignal('SIGINT')  });
+        process.on('SIGHUP', function() { relaySignal('SIGHUP')  });
+        process.on('SIGUSR2', function() { relaySignal('SIGUSR2')  });
+
+Note that SIGKILL and SIGSTOP cannot be caught, hence cannot be relayed.  KILL abrutply
+terminates the master, causing all workers to immediately exit, which is the expected
+behavior.  SIGSTOP suspends only the master, but as a workaround SIGTSTP can be caught
+and relayed, also suspends the signaled process that isn't listening for it.  SIGCONT
+resumes a process suspended by SIGSTOP or SIGTSTP.
+
+        process.on('SIGTSTP', function() { relaySignal('SIGTSTP') });
+        process.on('SIGCONT', function() { relaySignal('SIGCONT') });
+
+Because the master has ignored these fatal signals (caught and relayed, but otherwise
+ignored), the master will exit only when the worker processes have exited, which is the
+desired behavior.
 
 
 Command Line Trickery
