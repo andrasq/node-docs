@@ -83,7 +83,7 @@ process.  Any number of worker processes can be forked, each is
 
 ### The Master
 
-The master (or parent) process creates the workers with `child_process.fork()`, then
+The master (or parent) process creates the workers with `cluster.fork()`, then
 blocks waiting for all worker processes to exit, and exits.  Node distinguishes parent
 from worker by the presence of special environment variable `NODE_UNIQUE_ID` that it
 sets in the process environments of the workers it forks.
@@ -95,11 +95,11 @@ See also https://nodejs.org/api/cluster.html
 The worker (or child) processes start running the same script that the master did,
 but `cluster.isMaster` will be `false` for them.  Any network connections they
 listen on is automatically shared with the parent and the other workers.  This is
-automatic, it's built into node.
+automatic, it's built into the cluster code.
 
 ### Messages
 
-The cluster master can send ipc (inter-process communication) messages to the
+The cluster master can send IPC (inter-process communication) messages to the
 worker, and the worker can send to the parent.  Some messages are sent by nodejs
 automatically as part of the worker startup and shutdown sequence.
 
@@ -110,20 +110,21 @@ The parent process sends to the child with
         var child = cluster.fork();
         child.send(...)
 
-        // child listens with process.on('message')
+        // child listens to parent messages with process.on('message')
 
 The child process sends to the parent with
 
         process.send(...)
 
-        // parent listens with cluster.on('message') or child.on('message')
+        // parent listens to child messages with with child.on('message')
+        // or cluster.on('message')
 
 ### Startup
 
 Once all workers have disconnected, the parent exits unless other events are still
 pending.
 
-During the worker startup, the cluster object emits messages to track the startup
+During the worker startup, the cluster object emits events to track the startup
 sequence:
 
 - `forked` - sent when the child process is successfully created by the operating system
@@ -132,17 +133,17 @@ sequence:
 
 ### Shutdown
 
-Similarly, a worker shutdown also emits messages in the parent:
+Similarly, a worker shutdown also emits events in the parent:
 
-- `disconnect` - sent when child exited or has closed its ipc socket and can no longer be talked to
+- `disconnect` - sent when child exited or has closed its IPC socket and can no longer be talked to
 - `exit` - sent when child process exited and is no longer running
 
 If the child calls `process.disconnect()`, it will detach from all listened-on sockets
-then disconnect from the parent ipc socket.  Only listened-on sockets (ie server
+then disconnect from the parent IPC socket.  Only listened-on sockets (ie server
 sockets) are closed, client connections to databases or other services remain open.
 Once all workers have disconnected and no events are pending, the parent exits.
 
-If the parent calls `child.disconnect()` it will send each child an internal ipc
+If the parent calls `child.disconnect()` it will send each child an internal IPC
 message causing the child to call disconnect on itself.
 
 Note that `disconnect()` exits the child even though calls can be in progress, so an
