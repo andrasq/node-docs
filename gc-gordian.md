@@ -216,3 +216,23 @@ process group leader.  So if the master (and process group leader) has pid 1234 
 workers have pids 1235 and 1236, `kill -1234` will send a SIGTERM to the whole process
 group, all three processes.  (And if the master is relaying SIGTERM, then yes the
 workers will receive two SIGTERM signals, which may not be what was intended.)
+
+
+Multi-Process clusters
+----------------------
+
+The above discussed using node clusters just to soft-restart servers
+without dropping calls.  It is also possible to run multi-process clusters,
+as long as all parts of the system are multi-process safe.
+
+Increasing the cluster size is simple, one worker process is created for each
+`cluster.fork()` call.  Each worker will listen for connections on the same socket
+as the others.  Each worker, however, must take care not to do anything that
+interferes with the other workers.
+
+Some areas of potential multi-process interferece that needs to be mutexed:
+
+- logging and journaling (see qlogger and qfputs)
+- tempfile creation (see tempfile-js)
+- data file consumption (see qfputs)
+- database updates
