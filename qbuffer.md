@@ -82,4 +82,4 @@ the array of entities:
 
 Note that the two loops are the same except for how qbuf is configured.  In both
 cases qbuf buffers, delimits, splits and decodes the records.  In the first example
-each record is a newline terminated string, in the second it is a BSON object.
+each record is a newline terminated string, in the second each is a BSON object.
