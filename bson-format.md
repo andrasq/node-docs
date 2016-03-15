@@ -56,3 +56,28 @@ bson objects.  Reading the mongodump output file as a byte stream, it is
 possible to separate the first object by reading the length from the first
 four bytes, to separate the second object by reading the first four bytes
 following the first object, and so on the rest of the objects.
+
+
+BSON Types
+----------
+
+        0x01            64-bit IEEE 754 floating-point
+        0x02            NUL-terminated string
+        0x03            NUL-terminated document
+        0x04            array
+        0x05            binary
+        0x06            (deprecated, undefined)
+        0x07            ObjectID
+        0x08            Boolean
+        0x09            datetime
+        0x0A            null
+        0x0B            RegExp
+        0x0C            (deprecated, db ref)
+        0x0D            code
+        0x0E            symbol
+        0x0F            code with scope
+        0x10            32-bit signed little-endian integer
+        0x11            timestamp
+        0x12            64-bit signed integer
+        0xFF            min key
+        0x7F            max key
