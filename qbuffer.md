@@ -7,6 +7,10 @@ is a flexible, powerful binary and mixed binary / text stream splitting
 package.  It concatenates strings, binary buffers, or a mix of the two, locates the
 record delimiters in the stream, and extracts, converts and returns the records.
 
+QBuffer was developed to help parse the mixed text + binary stream used by the
+[beanstalk](https://github.com/andrasq/qbean) queue, which required support for
+contatenating buffers and reading both newline-terminated text and length-delimited
+binary data.
 
 Api
 ---
@@ -83,3 +87,53 @@ the array of entities:
 Note that the two loops are the same except for how qbuf is configured.  In both
 cases qbuf buffers, delimits, splits and decodes the records.  In the first example
 each record is a newline terminated string, in the second each is a BSON object.
+
+### Mixed Text and Binary
+
+To extract length-counted binary data whose length is contained on the end of the
+preceding line:
+
+        var QBuffer = require('qbuffer');
+        var stream = process.stdin;
+
+        var chunks = [];
+        var qbuf = new QBuffer();
+        stream.on('data', function(chunk) {
+            qbuf.write(chunk)
+        })
+        stream.on('end', function() {
+            while (qbuf.length > 0) {
+                var line = qbuf.getline('utf8');
+                if (!line) throw new Error("invalid length");
+                var length = parseInt(line.split(' ').pop(), 10);
+                if (!(length > 0)) throw new Error("invalid length");
+
+                if (qbuf.length < length) throw new Error("incomplete record");
+                var chunk = qbuf.read(length, null);
+                chunks.push(chunk);
+            }
+        })
+
+The length parsing and data retrieval could be rolled into a pair of functions
+configured as the `delimiter` and `decoder`, then the above generic extraction loop
+could be used for this use case as well:
+
+        var qbuf = new QBuffer({
+            encoding: null,
+            delimiter: function() {
+                var linelength = qbuf.linelength();
+                if (linelength <= 0) return -1;
+                var line = qbuf.peekline().toString();
+                var length = parseInt(line.slice(line.lastIndexOf(' ')), 10);
+                if (length >= 0) {
+                    if (this.length < linelength + length) return -1;
+                    return linelength;
+                }
+                else throw new Error("invalid length");
+            },
+            decoder: function(chunk) {
+                var line = chunk.toString();
+                var length = parseInt(line.slice(line.lastIndexOf(' ')), 10);
+                return this.read(length);
+            },
+        })
