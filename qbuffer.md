@@ -17,8 +17,16 @@ buffers and strings, with an optional encoding.  The canonical record is a newli
 terminated line, but the record is fully programmable.
 
 
-Overview
+Performance
+-----------
+
+QBuffer is very fast, it splits over a million 200 byte strings per second from 50k chunks.
+
+
+Examples
 --------
+
+### Strings
 
 To split newline terminated lines:
 
@@ -41,6 +49,8 @@ To split newline terminated lines:
             while ((line = qbuf.getline()) !== null) lines.push(line);
             if (qbuf.length > 0) throw new Error("incomplete last line");
         })
+
+### Objects
 
 To split length-counted BSON records from a mongodump bson stream and recover
 the array of entities:
@@ -73,9 +83,3 @@ the array of entities:
 Note that the two loops are the same except for how qbuf is configured.  In both
 cases qbuf buffers, delimits, splits and decodes the records.  In the first example
 each record is a newline terminated string, in the second it is a BSON object.
-
-
-Performance
------------
-
-QBuffer is very fast, it splits over a million 200 byte strings per second.
