@@ -2,7 +2,8 @@ Splitting Binary Data with QBuffer
 ==================================
 
 
-`qbuffer` is a flexible, powerful binary and mixed binary / text stream splitting
+[`qbuffer`](https://github.com/andrasq/node-qbuffer)
+is a flexible, powerful binary and mixed binary / text stream splitting
 package.  It concatenates strings, binary buffers, or a mix of the two, locates the
 record delimiters in the stream, and extracts, converts and returns the records.
 
