@@ -18,10 +18,12 @@ BSON Object:
 
 Each Record:
 
+Each bson record is the concatenated binary fields of `[ length, id, name, value ]`
+
 - 4B total length
-- 1B type
+- 1B type ie (see list below)
 - *B field name (variable length, NUL terminated)
-- 1B zero byte as name terminator
+- 1B zero byte as name terminator NUL
 - *B value (variable, based on type)
   - 0B null
   - 4B int32
