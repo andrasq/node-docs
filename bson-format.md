@@ -50,6 +50,20 @@ of an object type record.
                                       ^ entity name "p"
                                          ^ entity name NUL byte terminator
 
+
+        { p: null, a: 1.5 }
+
+        [ 13 00 00 00 0a 70 00 01 61 00 00 00 00 00 00 00 f8 3f 00 ]
+          ^ 19B bson total, including NUL object terminator
+                                                                ^ NUL bson terminator
+          ^ 4B BSON object length (19)
+                      ^ field 1 type, 0x0A, null
+                         ^ field 1 name, 'p' 0x70
+                            ^ field 1 name NUL terminator byte
+                               ^ field 2 type, 0x01 ieee floating-point
+                                  ^ 8 bytes of floating-point data
+
+
 Mongodump
 ---------
 
