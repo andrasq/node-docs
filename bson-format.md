@@ -61,8 +61,11 @@ of an object type record.
                          ^ field 1 name, 'p' 0x70
                             ^ field 1 name NUL terminator byte
                                ^ field 2 type, 0x01 ieee floating-point
-                                  ^ 8 bytes of floating-point data
-
+                                  ^ field 2 name, 'a' 0x61
+                                     ^ field 2 name NUL terminator
+                                        ^ 8 bytes of floating-point data
+                                                             ^ last byte of float
+                                                                ^ NUL bson terminator
 
 Mongodump
 ---------
@@ -77,17 +80,17 @@ following the first object, and so on the rest of the objects.
 BSON Types
 ----------
 
-        0x01            64-bit IEEE 754 floating-point
-        0x02            NUL-terminated string
+        0x01            64-bit IEEE 754 floating-point, 8 bytes
+        0x02            NUL-terminated string, strlen+1 bytes
         0x03            NUL-terminated document
         0x04            array
         0x05            binary
         0x06            (deprecated, undefined)
-        0x07            ObjectID
-        0x08            Boolean
-        0x09            datetime
-        0x0A            null
-        0x0B            RegExp
+        0x07            ObjectID, 12 bytes (4B be time, 3B system, 2B pid, 3B be seq)
+        0x08            Boolean 1 byte
+        0x09            datetime, 64-bit little-endian millisecond js timestamp
+        0x0A            null, 0 bytes
+        0x0B            RegExp, 2 NUL-terminated strings "ABC" and "im" of /ABC/im
         0x0C            (deprecated, db ref)
         0x0D            code
         0x0E            symbol
