@@ -22,7 +22,7 @@ Simple and Fast
 If uniqueness is not an absolute requirement, the simplest is to generate a
 random string.  This is very fast, and for many uses (eg request ids, unit
 tests) is unique enough.  (It is limited to 8 hex digits:  the nodejs random
-number generator apparently generates 64-bit random numbers.)
+number generator generates 32-bit random numbers.)
 
         Math.floor(Math.random() * 0x100000000 | 0).toString(16)
 
