@@ -84,9 +84,9 @@ process.  Any number of worker processes can be forked, each is
 ### The Master
 
 The master (or parent) process creates the workers with `cluster.fork()`, then
-blocks waiting for all worker processes to exit, and exits.  Node distinguishes parent
+waits for all worker processes to exit, and exits.  Node distinguishes parent
 from worker by the presence of special environment variable `NODE_UNIQUE_ID` that it
-sets in the process environments of the workers it forks.
+sets in the environment `process.env` of the workers it forks.
 
 See also https://nodejs.org/api/cluster.html
 
@@ -150,6 +150,40 @@ Note that `disconnect()` exits the child even though calls can be in progress, s
 explicit setTimeout delay loop may be required to allow them to finish.  Also note that
 if the parent exits the child will exit immediately, even if it has pending timeouts or
 events.
+
+### Safer Startup
+
+More complex services or ones that need very fast process replacement need a
+set of "enhanced" startup events that are better tailored to the application.
+In particular, it may be necessary to know when the service is fully initialized
+but to explicitly tell it when to start serving requests.  The enhanced events
+can be sent as cluster IPC messages and decoded into events on receipt.
+
+#### Startup
+
+- 'k.ready' - worker has initialized and is ready to listen for requests
+- 'k.start' - sent by master to tell worker to start and process requests
+
+#### Shutdown
+
+- 'k.stop' - sent by master to tell worker to stop processing requests
+- 'k.stopped' - sent by worker to indicate that it is no longer listening for requests
+
+The full "enhanced" startup sequence would flow as
+
+        Master                  Worker
+
+        fork()          -->                     // Startup:
+                        <--     'forked'        // process created
+                        <--     'online'        // node running
+                        <--     'k.ready'       // ready to work
+        'k.start'       -->
+                        <--     'listening'     // running
+
+        'k.stop'        -->                     // Shutdown:
+                        <--     'k.stopped'     // stopped running
+                        <--     'disconnect'    // listen sockets closed
+                        <--     'exit'          // process exited
 
 
 Signals
