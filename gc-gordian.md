@@ -60,6 +60,9 @@ The same echo service, in a cluster:
         var cluster = require('cluster');
         var net = require('net');
 
+        // both master and worker processes run this same script, but
+        // cluster.isMaster is set only in the master, not the workers
+
         if (cluster.isMaster) {
             // master creates one worker
             var child = cluster.fork();
@@ -79,7 +82,7 @@ The same echo service, in a cluster:
 
 The cluster here is two processes, the master and one worker.  Both the master and the
 worker run the same script, but `cluster.isMaster` will be `true` only in the parent
-process.  Any number of worker processes can be forked, each is
+process.  Any number of worker processes can be forked.
 
 ### The Master
 
