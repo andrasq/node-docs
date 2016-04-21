@@ -63,18 +63,26 @@ Node-v5 function calls are much quicker, but `func.apply` is a lot slower.
 Primitive timeout operations
 
 Queue and delete tasks, with `setTimeout / clearTimeout` and `setImmediate /
-clearImmediate`.  Rates in millions of tasks queued and cleared per second, but not
-run.  (`qtimers` defers garbage collecting cleared tasks, and is thus especially
-fast on this test.)
+clearImmediate`.  Rates in millions of tasks queued and cleared per second, and run
+periodically when `timeit` uses setImmediate to split up the call stack.
 
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         set/clear timeouts      0.069           0.370 **        0.104           0.108           0.172
         set/clear tmout, 1 arg  0.193           0.202 **        0.105           0.105           0.173
-            qt*:                                0.828                                           0.970 ++
+        set/clear immed         X               0.975           1.40            1.46            1.49  **
 
-        set/clear/run immediate X               0.960           1.39            1.42            1.41  **
-            qt:                                 5.16  ++        3.37            3.33            3.35
+As above, but all the set/clear immediates are queued first before adding a final
+setImmediate with the test callback.  This avoids the per-task callback overhead
+and is a better measure of the `qtimers` set/clear delayed deletion overhead
+(`Qtimers` defers purging the cleared tasks until run, but can queue + skip 40k
+tasks in 7 ms).
+
+                                v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
+
+        set immediate           3.95 ++         1.08            2.82            2.67            2.80  **
+        set/clear 40k,run 1     X               1.03            1.57            1.70            1.75  **
+            qt.0:               X               6.53  ++        4.10            3.85            3.91
 
 Self-recusive `setImmediate` calls.  Each test queues a call to itself.  Rates in
 millions of immediate tasks queued and run per second.
