@@ -62,6 +62,11 @@ Node-v5 function calls are much quicker, but `func.apply` is a lot slower.
 
 Primitive timeout operations
 
+Queue and delete tasks, with `setTimeout / clearTimeout` and `setImmediate /
+clearImmediate`.  Rates in millions of tasks queued and cleared per second, but not
+run.  (`qtimers` defers garbage collecting cleared tasks, and is thus especially
+fast on this test.)
+
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         set/clear timeouts      0.069           0.370 **        0.104           0.108           0.172
@@ -71,11 +76,23 @@ Primitive timeout operations
         set/clear/run immediate X               0.960           1.39            1.42            1.41  **
             qt:                                 5.16  ++        3.37            3.33            3.35
 
+Self-recusive `setImmediate` calls.  Each test queues a call to itself.  Rates in
+millions of immediate tasks queued and run per second.
+
+                                v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
+
         setImmediate recursion  1.36            0.692 **        0.476           0.470           0.523
         setImmed recur, 1 arg   1.38            0.269           0.312           0.321           0.331 **
         setImmed recur, 3 args  1.36            0.265           0.316           0.323           0.336 **
             qt.10:                              3.97  ++                                        2.21
             qt.1:                               1.15
+
+
+Create and run timeouts.  Each test creates 10k tasks with `setTimeout` then adds
+one final `setTimeout` with the callback to finish the test.  Rates in millions of
+timeouts created and run per second.
+
+                                v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         set/run 10k setTimeout  8.06            11.5  **        8.39            7.82            8.89
             qt:                                 27.0                                            33.1  ++
@@ -83,6 +100,12 @@ Primitive timeout operations
             qt:                                 0.725                                           1.04  ++
         set/run 10k, 3 args     0.290           0.388           0.734           0.733           0.776 **
             qt:                                 0.682                                           0.859 ++
+
+Create and run immediates.  Each test adds 10k immediate tasks then one final
+`setImmediate` that invokes the test callback to finish the test.  Millions of
+tasks created and run per second.
+
+                                v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         set/run 10k setImmed+   11              0.980           2.7             2.7             3.0   **
             qt.0:                               6.22  ++                                        3.75
