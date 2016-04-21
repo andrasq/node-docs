@@ -68,10 +68,13 @@ Primitive timeout operations
         set/clear tmout, 1 arg  0.193           0.202 **        0.105           0.105           0.173
             qt*:                                0.828                                           0.970
 
+        set/clear/run immediate X               0.960           1.39            1.42            1.41  **
+            qt:                                 5.16            3.37            3.33            3.35
+
         setImmediate recursion  1.36            0.692 **        0.476           0.470           0.523
         setImmed recur, 1 arg   1.38            0.269           0.312           0.321           0.331 **
         setImmed recur, 3 args  1.36            0.265           0.316           0.323           0.336 **
-            qt:                                 3.97                                            2.21
+            qt.10:                              3.97                                            2.21
             qt.1:                               1.15
 
         set/run 10k setTimeout  8.06            11.5  **        8.39            7.82            8.89
@@ -88,23 +91,27 @@ Primitive timeout operations
         10k setImmed, 3 args    10.6            0.31            1.27            1.37            1.45  **
             qt.0:                               3.53                                            2.66
 
-\* `qtimers` (v1.4.2 and v1.4.5).  qt.1 sets `setImmediate.maxTickDepth = 1` for node-v0.10 semantics,
-qt.0 to `= 0` for node-v5 semantics.
+\* `qtimers` (v1.4.2 and v1.4.5).  qt.1 sets `setImmediate.maxTickDepth = 1` for
+node-v0.10 semantics, qt.0 to `= 0` for node-v5 semantics and qt.10 to `= 10` to
+run up to 10 new tasks queued by the immediate tasks themselves.
 
 \+ node before v12 ran only one immediate task per event loop cycle, which hurt its throughput.
-Later versions run all queued immediate tasks.  Qtimers is configurable, by default it runs 10
-immediate tasks per event loop cycle.
+Later versions run all queued immediate tasks.  Qtimers is configurable.
 
 As is visible especially from the `setImmediate` results, although the node-5
-rewrite improved the system results, the same implementation runs much faster under
-the old node-v0.10.  Perhaps a faster library but on a slower platform.
+rewrite improved bulk setImmediate processing, task latency (self-recursion speed)
+is slower.  The same sources (qtimers implementation) runs much faster under the
+old node-v0.10.  Perhaps a faster library but on a slower engine, or an engine
+no longer well matched to short bursts.
 
 ### Cpu
 
 Cpu consumption of concurrent `setTimeout` task handling.  Each task re-queues
-itself with a delay of 1 ms, and unref-s the created timer so the program can exit
+itself with a delay of 1 ms, and unref()s the created timer so the program can exit
 after 10 seconds.
 
+
+                                                v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         10-sec 1ms setTimeout loop              11.6%           9.1%            8.4%            8.3%  **
             qt:                                 10.3%           7.8%            7.6%            7.9%
