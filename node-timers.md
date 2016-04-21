@@ -89,9 +89,9 @@ millions of immediate tasks queued and run per second.
 
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
-        setImmediate recursion  1.36            0.692 **        0.476           0.470           0.523
-        setImmed recur, 1 arg   1.38            0.269           0.312           0.321           0.331 **
-        setImmed recur, 3 args  1.36            0.265           0.316           0.323           0.336 **
+        setImmediate recursion  1.36 ++         0.692 **        0.476           0.470           0.523
+        setImmed recur, 1 arg   1.38 ++         0.269           0.312           0.321           0.331 **
+        setImmed recur, 3 args  1.36 ++         0.265           0.316           0.323           0.336 **
             qt.10:                              3.97  ++                                        2.21
             qt.1:                               1.15
 
@@ -115,12 +115,12 @@ tasks created and run per second.
 
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
-        set/run 10k setImmed+   11              0.980           2.7             2.7             3.0   **
-            qt.0:                               6.22  ++                                        3.75
-        10k setImmed, 1 arg     10.8            0.31            1.25            1.37            1.39  **
-            qt.0:                               3.40  ++                                        2.60
-        10k setImmed, 3 args    10.6            0.31            1.27            1.37            1.45  **
-            qt.0:                               3.53  ++                                        2.66
+        set/run 10k setImmed+   11   ++         0.980           2.7             2.7             3.0   **
+            qt.0:                               6.22                                            3.75
+        10k setImmed, 1 arg     10.8 ++         0.31            1.25            1.37            1.39  **
+            qt.0:                               3.40                                            2.60
+        10k setImmed, 3 args    10.6 ++         0.31            1.27            1.37            1.45  **
+            qt.0:                               3.53                                            2.66
 
 \* `qtimers` (v1.4.2 and v1.4.5).  qt.1 sets `setImmediate.maxTickDepth = 1` for
 node-v0.10 semantics, qt.0 to `= 0` for node-v5 semantics and qt.10 to `= 10` to
