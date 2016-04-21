@@ -160,6 +160,24 @@ active at the same time are still quite cpu intensive.  In fact, too many active
 timeouts will still crush node.
 
 
+Conclusions
+-----------
+
+Node v0.10.42 was faster to `func.apply`, clearing timers and setImmediate and
+setTimeout with no arguments.  The new node timers are faster for calling functions,
+setting and running immediates and timeouts with arguments, and uses less cpu.
+On these test cases, `qtimers` is faster than either, and uses even less cpu.
+
+
+Further Work
+------------
+
+- interval timers were not investigated
+- might be possible to further speed up the new node timers
+- might be possible to avoid building closures for every callback and just save the argv
+- the results are not linear in data size, but the knee is in different locations for native node vs qtimers.
+  For some specific datasets native node can be faster than qtimers.
+
 Test Scaffolding
 ----------------
 
