@@ -181,6 +181,7 @@ Further Work
 - might be possible to avoid building closures for every callback and just save the argv
 - the results are not linear in data size, but the knee is in different locations for native node vs qtimers.
   For some specific datasets native node can be faster than qtimers.
+- the results are the average of 10 runs, but more runs seem to produce higher values
 
 Test Scaffolding
 ----------------
