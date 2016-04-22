@@ -34,7 +34,7 @@ The Stats
 
 Measured processing rates (millions of calls / second).  "Qt" is the throughput of
 the same operation using `qtimers` instead.
-[`qtimers`](https://github.com/andrasq/qtimers) is an alternate implementation of
+[`qtimers`](https://github.com/andrasq/node-qtimers) is an alternate implementation of
 the nodejs `timers` package, and is not tied to any one specific version of node
 (it is only partially working on node v0.8).
 
