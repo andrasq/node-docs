@@ -82,7 +82,7 @@ tasks in 7 ms).
 
         set immediate           3.95 ++         1.08            2.82            2.67            2.80  **
         set/clear 40k,run 1     X               1.03            1.57            1.70            1.75  **
-            qt.0:               X               6.53  ++        4.10            3.85            3.91
+            qt:                 X               8.58  ++        4.31            4.40            4.52
 
 Self-recusive `setImmediate` calls.  Each test queues a call to itself.  Rates in
 millions of immediate tasks queued and run per second.
@@ -92,9 +92,7 @@ millions of immediate tasks queued and run per second.
         setImmediate recursion  1.36 ++         0.692 **        0.476           0.470           0.523
         setImmed recur, 1 arg   1.38 ++         0.269           0.312           0.321           0.331 **
         setImmed recur, 3 args  1.36 ++         0.265           0.316           0.323           0.336 **
-            qt.10:                              3.97  ++                                        2.21
-            qt.1:                               1.15
-
+            qt:                 X               4.11  ++        2.26            2.35            2.29
 
 Create and run timeouts.  Each test creates 10k tasks with `setTimeout` then adds
 one final `setTimeout` with the callback to finish the test.  Rates in millions of
@@ -106,9 +104,9 @@ timeouts created and run per second.
         set/run 10k, 1 arg      0.305           0.397           0.718           0.737           0.801 **
         set/run 10k, 3 args     0.290           0.388           0.734           0.733           0.776 **
 
-            qt 1.4.7:           1.90            1.85            2.04            2.33  ++        2.27
-            qt 1.4.7 1 arg:     1.68            1.67            1.94            2.19            2.19  ++
-            qt 1.4.7 3 args:    1.70            1.71            1.92            2.15            2.16  ++
+            qt:                 1.90            1.85            2.04            2.33  ++        2.27
+            qt, 1 arg:          1.68            1.67            1.94            2.19            2.19  ++
+            qt, 3 args:         1.70            1.71            1.92            2.15            2.16  ++
 
 Create and run immediates.  Each test adds 10k immediate tasks then one final
 `setImmediate` that invokes the test callback to finish the test.  Millions of
@@ -117,15 +115,16 @@ tasks created and run per second.
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         set/run 10k setImmed+   11   ++         0.980           2.7             2.7             3.0   **
-            qt.0:                               6.22                                            3.75
         10k setImmed, 1 arg     10.8 ++         0.31            1.25            1.37            1.39  **
-            qt.0:                               3.40                                            2.60
         10k setImmed, 3 args    10.6 ++         0.31            1.27            1.37            1.45  **
-            qt.0:                               3.53                                            2.66
 
-\* `qtimers` (v1.4.2 and v1.4.5).  qt.1 sets `setImmediate.maxTickDepth = 1` for
-node-v0.10 semantics, qt.0 to `= 0` for node-v5 semantics and qt.10 to `= 10` to
-run up to 10 new tasks queued by the immediate tasks themselves.
+            qt:                 X               6.97  ++        4.11            4.09            4.23
+            qt, 1 arg:          X               5.11  ++        3.33            3.37            3.40
+            qt, 3 args:         X               4.86  ++        3.24            3.22            3.19
+
+\* `qtimers` v1.4.7.  By default qtimers run all tasks on the immediate queue
+plus up to 10 additional ones.  Set `setImmediate.maxTickDepth = 1` for
+node-v0.10 semantics, to `= 0` for node-v5 semantics.
 
 \+ node before v12 ran only one immediate task per event loop cycle, which hurt its throughput.
 Later versions run all queued immediate tasks.  Qtimers is configurable.
