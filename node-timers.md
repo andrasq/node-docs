@@ -102,12 +102,13 @@ timeouts created and run per second.
 
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
-        set/run 10k setTimeout  8.06            11.5  **        8.39            7.82            8.89
-            qt:                                 27.0                                            33.1  ++
+        set/run 10k setTimeout  0.819           1.139 **        0.847           0.836           0.949
         set/run 10k, 1 arg      0.305           0.397           0.718           0.737           0.801 **
-            qt:                                 0.725                                           1.04  ++
         set/run 10k, 3 args     0.290           0.388           0.734           0.733           0.776 **
-            qt:                                 0.682                                           0.859 ++
+
+            qt 1.4.7:           1.90            1.85            2.04            2.33  ++        2.27
+            qt 1.4.7 1 arg:     1.68            1.67            1.94            2.19            2.19  ++
+            qt 1.4.7 3 args:    1.70            1.71            1.92            2.15            2.16  ++
 
 Create and run immediates.  Each test adds 10k immediate tasks then one final
 `setImmediate` that invokes the test callback to finish the test.  Millions of
