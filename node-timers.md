@@ -168,7 +168,7 @@ Conclusions
 
 Node v0.10.42 was faster at `func.apply`, clearing timers and setImmediate and
 setTimeout with no arguments.  The new node timers are faster for function calls,
-setting and running immediates and timeouts with arguments, and uses less cpu.
+setting and running immediates and timeouts with arguments, and use less cpu.
 On these test cases, `qtimers` is faster than either, and uses even less cpu.
 Qtimers running on node v0.10.42 is frequently faster than either native v0.10.42,
 native v5.10.1, or qtimers running on v5.10.1.
