@@ -85,7 +85,7 @@ tasks in 7 ms).
 
         set immediate           3.95 ++         1.08            2.82            2.67            2.80  **
         set/clear 40k,run 1     X               1.03            1.57            1.70            1.75  **
-            qt:                 X               8.58  ++        4.31            4.40            4.52
+            qt*:                X               8.58  ++        4.31            4.40            4.52
 
 Self-recusive `setImmediate` calls.  Each test queues a call to itself.  Rates in
 millions of immediate tasks queued and run per second.
