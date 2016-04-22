@@ -49,15 +49,18 @@ not always the best.  \+\+ marks the overall top result.
 Closures and function calls underlying it all
 
         function f() { };
+        function f3(a,b,c) { };
         N = null;
                                 v0.8.28         v0.10.42        v4.4.0          v5.8.0          v5.10.1
 
         f(1,2,3)                134             133             370  ++         320             330   **
+        f3(1,2,3)               113             115             275             278  **         275
         f.call(N,1,2,3)         40              40              63   ++         61              62    **
         f.apply(N,[1,2,3])      15              15 **           12              11              11
             (invoke*)           15              23              30              30              30    ++
 
 Node-v5 function calls are much quicker, but `func.apply` is a lot slower.
+(And the timings show the cost of assigning arguments to function parameters, f vs f3.)
 
 \* `lib/qinvoke.js` from the `qrpc` package
 
