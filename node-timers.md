@@ -185,6 +185,9 @@ Further Work
 - the results are not linear in data size, but the knee is in different locations for native node vs qtimers.
   For some specific datasets native node can be faster than qtimers.
 - the results are the average of 10 runs, but more runs seem to produce higher values
+- unreferencing timers is very slow, skipping them instead can be 10x faster
+  (qtimers can set, clear and skip 2.3m timeouts per second vs node v5 210k)
+
 
 Test Scaffolding
 ----------------
