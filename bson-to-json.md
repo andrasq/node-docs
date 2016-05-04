@@ -27,13 +27,6 @@ The transcoding approach was motivated by a few observations:
 - many of the converted values (numbers, dates) are easy to recover and are faster
   to convert in javascript than with a native function
 
-And as luck would have it, the conversion was made even easier by
-
-- BSON strings encoded to bytes are quite similar to JSON bytes, utf8 encoded (but not
-  the control characters)
-- RegExp regular expression objects serialize to the JSON empty object `{}`
-- dates serialize to the built-in `toISOString()` format
-
 
 Implementation
 --------------
@@ -42,6 +35,15 @@ Implementation
 - an error is thrown if the conversion cannot be handled
 - functions, symbols, binary data, code with scope and timestamps are not handled
 - both property names and value strings are properly json-encoded
+
+The implementation was was made even easier by
+
+- utf8 byte sequences are valid JSON
+- BSON strings are saved as utf8 byte tuples (but BSON does not \u-escape the
+  control characters)
+- RegExp regular expression objects serialize to the JSON empty object `{}`
+- dates serialize to the built-in `toISOString()` format
+- BSON arrays are identical to BSON objects, and array indices are easy to recover
 
 
 Timings
