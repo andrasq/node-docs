@@ -31,6 +31,8 @@ And as luck would have it, the conversion was made even easier by
 
 - BSON strings encoded to bytes are quite similar to JSON bytes, utf8 encoded (but not
   the control characters)
+- RegExp regular expression objects serialize to the JSON empty object `{}`
+- dates serialize to the built-in `toISOString()` format
 
 
 Implementation
@@ -38,8 +40,8 @@ Implementation
 
 - implemented as an accelerator, not a definitive conversion function
 - an error is thrown if the conversion cannot be handled
-- functions, symbols are not handled
-- both property names and value strings are json-encoded
+- functions, symbols, binary data, code with scope and timestamps are not handled
+- both property names and value strings are properly json-encoded
 
 
 Timings
