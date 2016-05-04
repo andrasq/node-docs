@@ -21,7 +21,7 @@ The transcoding approach was motivated by a few observations:
 
 - the BSON and JSON formats are conceptually fairly similar
 - the node BSON conversion library does its work using native C++ functions
-- the nodejs interface to nagive C++ plugins is slow, about 4 million calls / sec
+- the nodejs interface to native C++ plugins is slow, about 4 million calls / sec
 - it is much slower to build a js object hierarchy in C++ than in javascript itself
 - many of the converted strings are plain ASCII and could be copied as-is
 - many of the converted values (numbers, dates) are easy to recover and are faster
