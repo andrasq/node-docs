@@ -10,8 +10,8 @@ conversion process is to decode the BSON string into an object, then re-encode t
 object into a JSON string.
 
 This approach is a slow, cpu intensive process.  However, it turns out that BSON
-can be converted to JSON on the fly without fully decoding it, using 1/4 to 1/10
-of the time and cpu.
+can be converted to JSON on the fly without fully decoding it, using much less time
+and cpu.
 
 
 Observations
@@ -68,7 +68,7 @@ determined by the speed at which the data can be converted.
 
 Batched JSON data fetches are throttled to not exceed 10 mb / second.  The actual
 data rate is about 5.5 mb / sec due to processing overhead.  After this change,
-the data rate increased to 7.8mb / sec (more efficient conversion), and total cpu
+the data rate increased to 7.5mb / sec (more efficient conversion), and total cpu
 used dropped from 5.6 to 1.5 sec.  The total elapsed time also decreased 40%, from
 14.5 to 10.5 seconds.
 
