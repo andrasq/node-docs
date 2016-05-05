@@ -45,6 +45,17 @@ The implementation was made even easier by
 - dates serialize to the built-in `toISOString()` format
 - BSON arrays are identical to BSON objects, and array indices are easy to recover
 
+The heart of the conversion is looping over the bytes in the source buffer, copying
+them into the target buffer, with some minor alterations.
+
+Some conversions required writing a lexical analyzer (a lexer, a concept familiar
+from compilers):  scanning bytes and assembling them into numbers and strings.  Some
+numbers were base 10 big-endian (human), others base-256 little-endian (binary).
+
+The code to scan floating-point numbers I borrowed from another project of mine,
+since a hand-written js function to convert 8 stored bytes into a floating-point
+Number sped up the conversion of floats by 40% over `buffer.readDoubleLE()`.
+
 
 Timings
 -------
