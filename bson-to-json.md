@@ -36,7 +36,7 @@ Implementation
 - functions, symbols, binary data, code with scope and timestamps are not handled
 - both property names and value strings are properly json-encoded
 
-The implementation was was made even easier by
+The implementation was made even easier by
 
 - utf8 byte sequences are valid JSON
 - BSON strings are saved as utf8 byte tuples (but BSON does not \u-escape the
