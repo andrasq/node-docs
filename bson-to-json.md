@@ -100,6 +100,24 @@ Future Work
   the library
 
 
+Update
+------
+
+The BSON to JSON conversion project fired up our interest in BSON coding, so we
+dusted off our experimental bson parser (had been tacked on to
+[json-simple](https://github.com/andrasq/node-json-simple) and spent a busy two
+days hacking it and added full encode / decode functionality.  (See
+[qbson](https://github.com/andrasq/node-qbson).)
+
+The results are interesting.  Decoding is slightly faster for most data types, but
+arrays are much (7x) faster than [`bson`](https://github.com/mongodb/js-bson).
+Decoding is faster than [`buffalo`](https://github.com/marcello3d/node-buffalo)
+as well.
+
+Manual encoding though is 6x faster than `bson` and 4x faster than `buffalo`, some
+of it due to a string to utf8 converter written in javascript.
+
+
 Glossary
 --------
 
