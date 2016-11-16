@@ -87,10 +87,10 @@ access library, layering a cache in front of the metadata fetches, and replacing
 `request` with a thin wrapper.
 
 The results look really promising, cpu usage down by 60% and network traffic down by
-more than 80%.  We did have to fix an integration glitch where we didn't notice that
-the code was modifying the now shared metadata object, and we are currently looking
-for a workaround for a node-v6.9.1 memory management glitch that breaks the service,
-but this approach is definitely viable.
+more than 80%.  We did have to fix an integration glitch where we didn't notice how
+the now shared metadata object was used, and we are still looking for a workaround
+for a node-v6.9.1 memory management glitch that breaks the service, but this approach
+is definitely viable.
 
 
 Lessons Learned
