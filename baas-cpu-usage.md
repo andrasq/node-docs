@@ -124,7 +124,7 @@ and crashes on a memory allocation error.  The identical code runs fine under 6.
 Future Work
 -----------
 
-Now that the low-hanging fruit has been identified, how can it be made yet faster?
+Now that the low-hanging fruit has been addressed, how can it be made yet faster?
 
 - If the db api were modified to allow combining the 3 auth-related calls (as with a
   new special-purpose function or some new macro ability) 2 more ms could be saved.
