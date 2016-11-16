@@ -35,7 +35,7 @@ Just a few isolated calls accounted for 18.6 of the 20 ms.
 
 The remaining 1.4 ms includes decoding parameters, routing the call, encoding the
 response, and updating multiple logfiles, just a little time spent in each of many
-different functions, and we did not investigate these in more detail.
+different functions that we did not investigate these in more detail.
 
 The timing information suggested areas to explore:  speedup available from reusing
 connections, opportunities for caching, and timing the overhead of the `request`
