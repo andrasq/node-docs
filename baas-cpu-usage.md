@@ -83,14 +83,14 @@ At this point we had accounted for 18.6 seconds of the 20 ms cpu usage, and
 identified 13.2 cpu seconds of potential savings.
 
 The changes were straightforward:  adding a `keepAlive` config option to our db
-library, layering a cache in front of the metadata fetches, and replacing `request`
-with a thin wrapper.
+access library, layering a cache in front of the metadata fetches, and replacing
+`request` with a thin wrapper.
 
-The results look really promising.  Overall cpu usage went down by 25% and lowered
-network traffic by more than 80%.  We did have to fix an integration glitch where
-we didn't notice that the code was modifying the now shared metadata object, and
-we are currently looking for a workaround for a node-v6.9.1 memory management
-glitch that breaks the service, but this approach still looks viable.
+The results look really promising, cpu usage down by 60% and network traffic down by
+more than 80%.  We did have to fix an integration glitch where we didn't notice that
+the code was modifying the now shared metadata object, and we are currently looking
+for a workaround for a node-v6.9.1 memory management glitch that breaks the service,
+but this approach is definitely viable.
 
 
 Lessons Learned
