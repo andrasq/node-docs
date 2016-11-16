@@ -70,7 +70,7 @@ peak traffic periods, when it matters, even a short 5-second timeout cache could
 capture 99% of the metadata requests.
 
 - omit 5 db calls 99% of the time, save another *5 ms* total
-- omit 1 json decode 99% of the time, save another *1 ms*
+- omit 1 ms of json decode 99% of the time, save another *1 ms*
 
 All in all, these few relatively small changes looked to save 13.2 ms (4 +
 2.4 + 0.8 + 5 + 1), or 66% of the 20 ms cpu used per call.
