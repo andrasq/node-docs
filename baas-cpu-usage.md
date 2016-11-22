@@ -98,7 +98,7 @@ Lessons Learned
 
 Know Your Tools
 
-Tools perform a function at cost.  Understanding the cost (cpu, memory overhead) is
+Tools perform a function at a cost.  Understanding the cost (cpu, memory overhead) is
 an important part of using the tool.
 
 Convenience Has A Price
