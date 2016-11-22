@@ -9,6 +9,7 @@ Collection of notes, observations, studies and writeups on nodejs.
 * 2016-03-15  [qbuffer](qbuffer.md) - splitting binary data with QBuffer
 * 2016-02-26  [gc-gordian](gc-gordian.md) - avoiding nodejs garbage collection stalls with clusters
 * 2015-04-10  [elastic-pipes](elastic-pipes.md) - using journal files to unblock cross-service data flows
+* 2015-02-08  [fair-queue-scheduler](fair-queue-scheduler.md) - my solution to fair multi-tenant service queue scheduling
 * 2015-04-03  [event-loop-blocked](event-loop-blocked.md) - how log was my event loop blocked?
 * 2014-12-20  [unique_ids](unique_ids.md) - very fast unique id generation
 * 2014-12-01  [better_logger](better_logger.md) - on building a better logger
