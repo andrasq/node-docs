@@ -3,6 +3,7 @@ Nodejs Docs
 
 Collection of notes, observations, studies and writeups on nodejs.
 
+* 2017-01-11  [upgrade-2016](upgrade-2016.md) - upgrading to Skylake
 * 2016-11-15  [baas-cpu-usage](baas-cpu-usage.md) - running a web service on 60% less cpu
 * 2016-05-04  [bson-to-json](bson-to-json.md) - faster BSON to JSON conversion (Kinvey Hackathon, May 2016)
 * 2016-04-21  [node-timers](node-timers.md) - performance of nodejs `setImmediate` and `setTimeout` across node versions
