@@ -97,9 +97,9 @@ Upshot:
   Old system must have been misconfigured, or slowed by the motherboard.)
 - 24W less power consumption
 - no worse video performance than x1300 (using the "vesa" and "vbe" Xorg drivers)
-- temps above ambient +8*C idle, +46 x8 busy (build), +41 x8 very busy (prime95 at start),
+- temps above ambient +8* C idle, +46 x8 busy (build), +41 x8 very busy (prime95 at start),
   to +58 x8 very very busy (prime95 at end) (4400 MHz at 1.325V)
-  (or 4500 MHz at auto - 0.025V: +1*C idle, +41 x8 build, +40 to +67*C prime95)
+  (or 4500 MHz at auto - 0.025V: +1* C idle, +41 x8 build, +40 to +67* C prime95)
 - lost support for latest docker.io (needs the 4.3 kernel)
 - lost 1900x1200 vga text console mode (had with 4.3 kernel, and vga=383 (0x17F) does not take)
 
@@ -170,17 +170,17 @@ The Ugly.
 - cpu cooler 1/8 in too tall, sticks out of case, lid is bowed
   (A: was able to re-close the lid and slide over the cooler.  Is touching though, pressing on the chip.)
 - cooler fan speed regulator is touchy, fan becomes audible even with just one core busy
-  (because 1 thread busy spikes cpu temp to 64*C.  Curiously, 4 threads is 65*C, 8 is 68*C.)
-  (A: selecting "Silent" fan mode in bios seems to have fixed the fan, now speeds up above 66*C, not 54.
-  However, if core #2 is the one busy, the fan sounds, because core 2 runs 5*C hotter than the others.)
-- core 2 runs 5 to 10*C hotter than the others.  Typical observed temperatures under load are 67-71-62-61.
+  (because 1 thread busy spikes cpu temp to 64* C.  Curiously, 4 threads is 65* C, 8 is 68* C.)
+  (A: selecting "Silent" fan mode in bios seems to have fixed the fan, now speeds up above 66* C, not 54.
+  However, if core #2 is the one busy, the fan sounds, because core 2 runs 5* C hotter than the others.)
+- core 2 runs 5 to 10* C hotter than the others.  Typical observed temperatures under load are 67-71-62-61.
 - the cpu cooler fan thrums at certain higher speeds, the air flowing across the blades
   is causing them to resonate.  Bracing the cooler fins does nothing, but a hand
   2 inches in front of the fan quiets it back down.  Hard to do with the lid closed.
   (A: hasn't been an issue on "Silent" mode)
 - linux 4.8 kernel scaling governors all default to "performance", can't seem to change
   (A: was a 4.3 kernel thing, 3.16.0 works as expected)
-- the system runs cooler at idle (31*C vs 35*), but hotter under full load (68*C vs 56*) than before
+- the system runs cooler at idle (31* C vs 35*), but hotter under full load (68* C vs 56*) than before
 - the case is louder, can hear the hdd more
   (A: lid on but not sealed, and echoes.  Is more like it used to be with the lid on.)
 - the new UEFI graphical BIOSes are very slow compared to the old text-only interface.
@@ -271,7 +271,7 @@ My simple 4500 MHz overclock:
 - set base multiplier to x45
 - set voltage to "Normal" to have the cpu adjust it to the load
 - set dynamic voltage to -0.025 to run cooler, 4500 needs less than the cpu thinks
-- set memory speed (I set mine to Profile1 2400, but memory speed does not matter much,
+- set memory speed (I set mine to XMP Profile1 2400, but memory speed does not matter much,
   Skylake has tremendous memory bandwith even at the default 2133 setting)
 - reboot.  The BIOS will show 4000 MHz with 4500 turbo mode, Linux will show 4000 MHz,
   but benchmarks will run at 4500.
