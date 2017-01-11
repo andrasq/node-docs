@@ -71,18 +71,19 @@ Upgraded to Skylake, for $405 including DDR4 (a $115 savings off the original es
 Also got:
 - sata dvd-rw ($20)
 - Pentium G4400 socket 1151 cpu for testing ($45 used)
-- 16gb m.2 pci-e ssd to play with as a caching drive
+- 16gb m.2 pci-e ssd to play with as a caching drive ($16 used)
 - pci-e sound card ($25 used Sound Blaster X-Fi) to try
-- 128gb m.2 pci-e ssd for the boot/root drive (Samsung 840 Pro CM871a, 525mb/s 425mb/s)
+- 128gb m.2 pci-e ssd for the boot/root drive (Samsung 840 Pro CM871a, 525mb/s 425mb/s) ($30 used)
+- 350W SeaSonic 80+ Bronze power supply ($18 used)
 
 Removed:
 - floppy drive
 - ide dvd-rw
+- old 320gb wd re3 drive
 - scsi cd-rom
 - scsi backup tape
 - scsi controller
 - un-installed docker.io
-- old 320gb sata wd re3 drive
 
 Swapped out:
 - switched to 350W SeaSonic 80+ Bronze power supply from Enermax NAXN 450W (save 11W)
@@ -95,9 +96,10 @@ Upshot:
 - 7x-9x faster `make -j8` builds (Only 2.2x faster on retest; 70% faster cores: 22% clock, 41% IPC.
   Old system must have been misconfigured, or slowed by the motherboard.)
 - 24W less power consumption
-- no worse video performance than x1300 (using the vesa and vbe Xorg drivers)
-- temps above ambient +8*C idle, +36 x8 busy (build), +44 x8 very busy (prime95 at start),
-  +53 x8 very very busy (prime95 and end)
+- no worse video performance than x1300 (using the "vesa" and "vbe" Xorg drivers)
+- temps above ambient +8*C idle, +46 x8 busy (build), +41 x8 very busy (prime95 at start),
+  to +58 x8 very very busy (prime95 at end) (4400 MHz at 1.325V)
+  (or 4500 MHz at auto - 0.025V: +1*C idle, +41 x8 build, +40 to +67*C prime95)
 - lost support for latest docker.io (needs the 4.3 kernel)
 - lost 1900x1200 vga text console mode (had with 4.3 kernel, and vga=383 (0x17F) does not take)
 
@@ -116,7 +118,7 @@ It's some good news, some bad news, but by and large more good than bad.
 The bad news is that all told, this adds up to close to over $600 in parts, some
 essential, some infrastructure, some just to have.
 
-The good news is that the new system uses less power, have much greater memory
+The good news is that the new system uses less power, has much greater memory
 bandwidth, and should compile C sources an estimated 2.25 x faster than before.
 
 Update: building node v0.10.42 with gcc 4.9.2, the actual compile time speedup
@@ -136,6 +138,7 @@ The Good.
   vesa vbe xorg driver, not the i915 Intel chipset driver.
 - power consumption down by 24W, 11W (PSU) + 13W (iGPU)
 - enabling hyperthreading yields an additional 25% throughput
+- using "auto" voltage lets the cpu idle at very low temperatures (1 degree above ambient)
 
 The Bad.
 
@@ -159,6 +162,7 @@ The Bad.
 - `/sys/devices/system/cpu/cpufreq/ondemand/up_threshold` is now missing, breaking rc.local.
   Not clear how quickly the cpu switches to full performance mode.
   (A: was a 4.3 kernel thing, 3.16.0 works as expected)
+- using "auto" voltage generates a lot more heat under load than a fixed voltage
 
 The Ugly.
 
@@ -258,19 +262,9 @@ A Word About Skylake Overclocking
 ---------------------------------
 
 Skylake derives independent clocks for the chip subsystems from a base clock (BCLK)
-and a multiplier (factor, ratio).  The
-
-Oddities:
-- "4.00GHz" is baked into chip id, even when running at 4.50 GHz
-- BCLK reads back as 99.6 even when 100.5 or 101
-- setting the base multiplier still shows the base clock reading as 4000 MHz,
-  with the new 4500 setting showing up as the turbo speed
-- BIOS shows base and turbo speeds even if turbo is Disabled
-- default auto-selects the clock rate based on the load, turbo vs normal vs slow when idle
-- default auto-selects voltage based on the clock rate in effect
-- if changing the BCLK (base clock)
--- turn down uncore ratio, the caches don't overclock as well
--- turn down the graphics slice and graphics unslice ratios, the GPU doesn't overclock well
+and a multiplier (factor, ratio).  The core is easily overclockable, but the caches,
+integrated graphics, i/o and memory much less so.  Overclocking involves adjusting
+the clock multipliers and possibly the core voltage.
 
 My simple 4500 MHz overclock:
 - disable turbo mode and flex ratio override
@@ -281,3 +275,15 @@ My simple 4500 MHz overclock:
   Skylake has tremendous memory bandwith even at the default 2133 setting)
 - reboot.  The BIOS will show 4000 MHz with 4500 turbo mode, Linux will show 4000 MHz,
   but benchmarks will run at 4500.
+
+Oddities:
+- "4.00GHz" is baked into chip id, even when running at 4.50 GHz
+- BCLK reads back as 99.6 even when 100.5 or 101
+- setting the base multiplier still shows the base clock reading as 4000 MHz,
+  with the new 4500 setting showing up as the turbo speed
+- BIOS shows base and turbo speeds even if turbo is Disabled
+- default auto-selects the clock rate based on the load, turbo vs normal vs slow when idle
+- default auto-selects voltage based on the clock rate in effect
+- if changing the BCLK (base clock):
+  turn down uncore ratio, the caches don't overclock as well;
+  turn down the graphics slice and graphics unslice ratios, the GPU doesn't overclock well.
