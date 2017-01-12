@@ -206,6 +206,8 @@ the Bronze is the most cost effective (paying for itself in 1-2 years).
 - older "good" power supplies were typically 60-75% efficient
 - typical computer at idle consumes 60W
 - each idle spinning disk is about 6W
+- a power supply is most efficient under load, aim for 50-90%
+- a power supply is least efficient under light load, do not oversize, try to stay above 20%
 - using 10W less saves $17.50 a year at $.20 per kW/hr (suburban residential rates)
 
 A Word About SSD Storage
