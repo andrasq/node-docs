@@ -217,12 +217,12 @@ A used 100 GB SSD drive for the root drive can speed boot time 2-3x.  The most
 cost-effective choice is a used Samsung 840 or 850 Pro, sustaining streaming
 reads and writes of 500 MB/sec, close to the SATA limit.
 
-- SSDs can connect via SATA, SATA over pci-e plug, PCI-e x4 card, M.2 PCI-e socket
+- SSDs can connect via SATA, SATA over pci-e plug, SATA over M.2 socket, PCI-e x4 card, PCI-e M.2 socket
 - USB 2.0 can reach 40 MB/s, USB 3.0 can reach 101 MB/s
 - good disks can stream from the platter at over 130 MB/s
 - SATA III (and M.2 SATA) is limited to 6 gb/s, ie 750 MB/s; SATA Express 16 gb/s (2 GB/s), M.2 PCIe 32 gb/s (4GB/s)
 - read speed of even old M.2 SATA is 400 MB/s, and 2500 MB/s for new drives
-- old ssd drives can have very low write rates (16GB: 400r/50w, or 128GB: 500r/140w)
+- old SSD drives can have very low write rates (16GB: 400r/50w, or 128GB: 500r/140w)
 - write speed tends to increase with capacity (PM871 850 Pro: 128G: 540r/140w, 256G: 540r/280w, 512G: 540r/450w)
   But not always (the older CM871a 840 Pro: 128G: 540r/520w, 256G: 540r/520w, 512G: 540r/520w)
 - current top of the line SSD is Samsung 960, followed closely by Samsung 950.
@@ -259,6 +259,10 @@ A single-core hyperthreaded system will show 2 cores (1 physical, 1 virtual).  O
 busy program will show 50% utilization.  Adding a 2nd program will show 100%, but
 both will take 60% longer to complete overlapped than singly, because only 25%
 additional resources are actually available to do twice the work.
+
+If the virtual cores appear to be idle and the operating system schedules
+background (idle thread) jobs for them, these low priority jobs would consume 40%
+of the foreground processing resources.
 
 A Word About Skylake Overclocking
 ---------------------------------
