@@ -62,7 +62,7 @@ mid-range.  You see where this is heading.
 TL;DR:
 ------
 
-Upgraded to Skylake, for $405 including DDR4 (a $115 savings off the original estimate):
+Upgraded to Skylake, for $405 including DDR4 ($115 less than estimated):
 - socket 1151 motherboard (GA-Z170-HD3P, 2 pci slots, sane bios) ($65 retail open box)
 - i7-6700k cpu (4ghz Skylake, socket 1151, unlocked) ($275 retail)
 - Hyper 212 EVO cpu cooler ($25 mail order)
@@ -75,6 +75,7 @@ Also got:
 - pci-e sound card ($25 used Sound Blaster X-Fi) to try
 - 128gb m.2 pci-e ssd for the boot/root drive (Samsung 840 Pro CM871a, 525mb/s 425mb/s) ($30 used)
 - 350W SeaSonic 80+ Bronze power supply ($18 used)
+- 32gb thumb drive as removable media for bios upgrades ($7)
 
 Removed:
 - floppy drive
@@ -88,26 +89,20 @@ Removed:
 Swapped out:
 - switched to 350W SeaSonic 80+ Bronze power supply from Enermax NAXN 450W (save 11W)
 - removed ati x1300 video card in favor of built-in iGPU (HD-530) (save 13W)
-- downgraded linux kernel to 3.16 from 4.3 to recognize the iGPU (as an i915, but it works well)
+- downgraded linux kernel to 3.16 from 4.3 to recognize the iGPU (as "vesa vbe", but it works great)
 - changed KVM vm cpu type to "Hypervisor Default" (is missing features `svm` and `syscall` on Skylake)
 
 Upshot:
 - 2x-2.5x faster nodejs
 - 7x-9x faster `make -j8` builds (Only 2.2x faster on retest; 70% faster cores: 22% clock, 41% IPC.
   Old system must have been misconfigured, or slowed by the motherboard.)
-- 24W less power consumption
+- 24W less power consumption, now 52W at idle (system draw at plug, not including monitor)
 - no worse video performance than x1300 (using the "vesa" and "vbe" Xorg drivers)
 - temps above ambient +8* C idle, +46 x8 busy (build), +41 x8 very busy (prime95 at start),
   to +58 x8 very very busy (prime95 at end) (4400 MHz at 1.325V)
   (or 4500 MHz at auto - 0.025V: +1* C idle, +41 x8 build, +40 to +67* C prime95)
 - lost support for latest docker.io (needs the 4.3 kernel)
 - lost 1900x1200 vga text console mode (had with 4.3 kernel, and vga=383 (0x17F) does not take)
-
-Need:
-- usb mass storage (for bios upgrades)
-- wider case (to better fit the cpu cooler)
-- kernel newer than 4.4 (to recognize skylake chipset voltage and rpm probes)
-  (tried 4.8, but was no different, still no voltage or rpm measurements)
 
 
 Impressions So Far
@@ -293,3 +288,7 @@ Oddities:
 - if changing the BCLK (base clock):
   turn down uncore ratio, the caches don't overclock as well;
   turn down the graphics slice and graphics unslice ratios, the GPU doesn't overclock well.
+- Skylake dissipates much more power when overclocked.  With voltage set to "Normal" (let
+  the chip select) and dynamic voltage adjustment set to -0.025V (ie, less than the chip
+  asked for), the system power dissipation is 52W idle, 150W -j8 build, 160-219W prime95
+  stress testing.  The deltas are just cpu + memory.  8gb of ddr4 uses about 3W.
