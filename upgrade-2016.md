@@ -134,6 +134,8 @@ The Good.
 - power consumption down by 24W, 11W (PSU) + 13W (iGPU)
 - enabling hyperthreading yields an additional 25% throughput
 - using "auto" voltage lets the cpu idle at very low temperatures (1 degree above ambient)
+- tremendous memory bandwidth, `memtest86+ 5.0.1` reports 24gb/sec copy speed at 2400
+- populating all four memory slots retains bandwidth, 26.4gb/sec at 2400 MHz and 28.1 at 2530
 
 The Bad.
 
