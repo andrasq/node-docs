@@ -18,6 +18,14 @@ States:
    fate is undetermined.  This is a transitional state until the promise is resolved
    or settled.
 
+- `resolved` Pending with no value yet, but committed to receiving the value from
+   another (the resolving) promise / thenable.  If the resolving promise fulfills,
+   this promise will fulfill with the same value.  If the resolving promise rejects,
+   this promise will reject with the same reason.  This is a transitional state until
+   the resolving promise settles.  The resolving promise may itself resolve with
+   another promise, re-entering the `resolved` state waiting on a new resolving
+   promise.
+
 - `settled` The promise has taken on a final state and value that will never change.
    The settled state can be either `fulfilled` with a value or `rejected` with a
    reason; the two are mutually exclusive.  The state and value / reason can be
@@ -27,12 +35,6 @@ States:
 - `fulfilled` - settled with a fulfillment value
 
 - `rejected` - settled with a rejection reason
-
-- `resolved` Pending with no value yet, but committed to receiving the value from
-   another (the resolving) promise / thenable.  If the resolving promise fulfills,
-   this promise will fulfill with the same value.  If the resolving promise rejects,
-   this promise will reject with the same reason.  This is a transitional state until
-   the resolving promise settles.
 
 Transitions:
 
@@ -51,9 +53,9 @@ Transitions:
              create
                |
                V
-          [ PENDING ] -------> resolve <-----+
-               |                  |          |
-               V                  V          |
+          [ PENDING ] --------> resolve <----+
+               |                   |         |
+               V                   V         |
         fulfill / reject <--- [ RESOLVED ] --+
                |
                V
