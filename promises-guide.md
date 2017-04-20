@@ -51,9 +51,9 @@ Transitions:
              create
                |
                V
-          [ PENDING ] -------> resolve <----+
-               |                  |          \
-               V                  V          /
+          [ PENDING ] -------> resolve <-----+
+               |                  |          |
+               V                  V          |
         fulfill / reject <--- [ RESOLVED ] --+
                |
                V
