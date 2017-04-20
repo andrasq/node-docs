@@ -29,7 +29,7 @@ States:
 - `settled` The promise has taken on a final state and value that will never change.
    The settled state can be either `fulfilled` with a value or `rejected` with a
    reason; the two are mutually exclusive.  The state and value / reason can be
-   queried with then `then()` method.  This is a permanent state; once settled
+   queried with the `then()` method.  This is a permanent state; once settled
    no other state changes should occur.
 
 - `fulfilled` - settled with a fulfillment value
