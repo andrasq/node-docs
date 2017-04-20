@@ -14,16 +14,19 @@ States:
 
 - `pending` A newy created promise is pending. A pending promise has no value
    associated with it yet, nor a source for the value; its fate is undetermined.
+   This is a transitional state until the promise is resolved or settled.
 
 - `resolved` A resolved promise has no value yet, but is committed to receiving the
    value from another, the resolving, promise.  If the resolving promise fulfills,
    this promise will fulfill with the same value.  If the resolving promise rejects,
-   this promise will reject with the same reason.
+   this promise will reject with the same reason.  This is a transitional state
+   until the resolving promise settles.
 
 - `settled` The promise has taken on a final state and value that will never change.
    The settled state can be either `fulfilled` with a value or `rejected` with a
    reason; the two are mutually exclusive.  The state and value / reason can be
-   queried with then `then()` method.
+   queried with then `then()` method.  This is a permanent state; once settled
+   no other state changes should occur.
 
 - `fulfilled` - settled with a fulfillment value
 
@@ -33,7 +36,7 @@ Transitions:
 
 - `create` A new promise is created in the `pending` state
 
-- `fulfill` Settle the promise with a fulfillment value in the terminal state "resolved"
+- `fulfill` Settle the promise with a fulfillment value in the terminal state "fulfilled"
 
 - `reject` Settle the promise with a rejection reason in the terminal state "rejected"
 
@@ -48,45 +51,44 @@ Transitions:
    change its state, value or reason, and subsequent attempts to resolve, fulfill or
    reject it will be ignored.
 
-        (create)
-           |
-           |
-           V
-      [ PENDING ] ----> (resolve) <--+
-           |               |          \
-           |               |          |
-           V               V          /
-        (settle) <--- [ RESOLVED ] --+
-           |
-           |
-           V
-     [ FULFILLED ]
-     [ REJECTED ]
+          (create)
+             |
+             V
+        [ PENDING ] ----> (resolve) <--+
+             |               |          \
+             V               V          /
+          (settle) <--- [ RESOLVED ] --+
+             |
+             V
+        [ FULFILLED ]
+        [ REJECTED ]
 
 
 ## Methods
 
 ### new Promise( executor(resolve, reject) )
 
-Creates a new promise resolved or settled to the value returned by the executor
-with the resolve / reject functions.  If `resolve` returns a value (not a promise
-or a thenable) or `reject` returns anything, the new promise will immediately
-settle, fulfill with value or reject with reason.  If resolve returns a promise or
-a thenable, the new promise will resolve and will take on the value of the returned
-promise as soon as it settles.  `new Promise` can return either a `pending`, a
-`resolved` or a `settled` (`fulfilled` or `rejected`) promise, depending on what
-the executor initializes it with.
+Creates a new promise resolved or settled to the return value of the first one of
+the `resolve` or `reject` functions to return.  If `resolve` returns a value (not a
+promise or a thenable) the new promise will immediately fulfill with the value; if
+`reject` returns a reason, the new promise will immediately reject with the reason.
+Undefined counts as a reason.  If `resolve` returns a promise or a thenable, the new
+promise will resolve and will take on the value of the returned promise when it
+becomes available.  `new Promise` can return either a `pending`, a `resolved` or a
+`settled` (`fulfilled` or `rejected`) promise, depending on what the executor
+initializes it with.  If the executor throws an error before calling either `resolve`
+or `reject`, the new promise rejects with the thrown error as the reason.
 
 ### P.resolve( value )
 
 Creates a new promise initialized to value, equivalent to `new
-Promise(function(resolve, reject) { resolve(value) })`.  The new promise may be
-`pending`, `resolved` or `settled` (`fulfilled` or `rejected`).
+Promise(function(resolve, reject) { resolve(value); })`.  The returned promise may
+be `pending`, `resolved` or `settled` (`fulfilled`).
 
 ### P.reject( reason )
 
 Creates a new promise already rejected with reason, equivalent to `new
-Promise(function(resolve, reject) { reject(reason) })`.  The new promise is
+Promise(function(resolve, reject) { reject(reason); })`.  The returned promise is
 `settled` (`rejected`).
 
 ### promise.then( resolveHandler, rejectHandler )
