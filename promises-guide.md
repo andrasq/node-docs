@@ -93,17 +93,16 @@ Promise(function(resolve, reject) { reject(reason); })`.  The returned promise i
 
 ### promise.then( resolveHandler, rejectHandler )
 
-Creates a new promise that will take on the state returned by the handler function.
-The handler is be called when the thenable promise settles, until then the promise
-is `pending`.  If the thenable promise has already settled, the handler is called
-immediately.  The handler is called as a function, from the system call stack.  If
-the thenable promise fulfills with value, `resolveHandler(value)` will be called;
-if the thenable rejects with a reson, `rejectHandler(reason)` will be called.  In
-both cases, the handler's return value (including undefined) will be used to settle
-or resolve the new promise.  Note that the new promise is always fulfilled,
-independent of whether the thenable promise rejected or fulfilled; the only time
-the new promise rejects is if the handler throws; in that case the new promise will
-reject with the thrown value as the reject reason.
+Creates a new promise that will fulfill with the value returned by the handler
+function.  The handler is called once the thenable promise settles, until then the new
+promise remains `pending`.  The handler is called as a function, from the system call
+stack.  If the thenable promise fulfilled with value, `resolveHandler(value)` is
+called; if the thenable rejected with a reson, `rejectHandler(reason)` is called.  In
+both cases, the new promise will fulfill or resolve with the return value of the
+andler function (including undefined).  Note that the new promise is always
+_fulfilled_, even if the thenable promise rejected; the only time the new promise
+rejects is if the handler throws.  If the handler throws, the new promise rejects
+with the thrown value used as the reason.
 
 
 ## Thenables
