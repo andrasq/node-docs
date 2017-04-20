@@ -7,20 +7,16 @@ returned value, kind of like an event emitter with a memory.
 
 ## States
 
-A promise exists in one of three states:  _pending_, _resolved_, _settled_, and
-transitions between them with _create_, _fulfill_, _reject_, _resolve_ and _settle_.
+A promise exists in one of two states:  _pending_ or _settled_, each having two
+sub-states:  pending _unresolved_ or _resolved__, and settled _fulfilled_ or
+_rejected_.  The state transitions are _create_, _resolve_, _fulfill_ and _reject_.
 
 States:
 
-- `pending` A newy created promise is pending. A pending promise has no value
-   associated with it yet, nor a source for the value; its fate is undetermined.
-   This is a transitional state until the promise is resolved or settled.
-
-- `resolved` A resolved promise has no value yet, but is committed to receiving the
-   value from another, the resolving, promise.  If the resolving promise fulfills,
-   this promise will fulfill with the same value.  If the resolving promise rejects,
-   this promise will reject with the same reason.  This is a transitional state
-   until the resolving promise settles.
+- `pending` A newy created promise is `pending`. A pending promise has no value
+   associated with it yet, and is unresolved (no source is known for the value); its
+   fate is undetermined.  This is a transitional state until the promise is resolved
+   or settled.
 
 - `settled` The promise has taken on a final state and value that will never change.
    The settled state can be either `fulfilled` with a value or `rejected` with a
@@ -32,13 +28,19 @@ States:
 
 - `rejected` - settled with a rejection reason
 
+- `resolved` Pending with no value yet, but committed to receiving the value from
+   another (the resolving) promise / thenable.  If the resolving promise fulfills,
+   this promise will fulfill with the same value.  If the resolving promise rejects,
+   this promise will reject with the same reason.  This is a transitional state until
+   the resolving promise settles.
+
 Transitions:
 
 - `create` A new promise is created in the `pending` state
 
-- `fulfill` Settle the promise with a fulfillment value in the terminal state "fulfilled"
+- `fulfill` Settle the promise with a fulfillment value into the terminal state "fulfilled"
 
-- `reject` Settle the promise with a rejection reason in the terminal state "rejected"
+- `reject` Settle the promise with a rejection reason into the terminal state "rejected"
 
 - `resolve` When resolved, the promise commits to taking on the state and value
    (or eventual state and value) of another promise or thenable.  Once resolved,
@@ -46,22 +48,17 @@ Transitions:
    the resolving promise itself.  It is possible to resolve with a promise multiple
    times before settling.
 
-- `settle` When settled, the promise enters a terminal state, either `fulfilled` with
-   a value value or `rejected` with a reason.  Once settled, the promise will not
-   change its state, value or reason, and subsequent attempts to resolve, fulfill or
-   reject it will be ignored.
-
-          (create)
-             |
-             V
-        [ PENDING ] ----> (resolve) <--+
-             |               |          \
-             V               V          /
-          (settle) <--- [ RESOLVED ] --+
-             |
-             V
-        [ FULFILLED ]
-        [ REJECTED ]
+             create
+               |
+               V
+          [ PENDING ] -------> resolve <----+
+               |                  |          \
+               V                  V          /
+        fulfill / reject <--- [ RESOLVED ] --+
+               |
+               V
+          [ FULFILLED ]
+          [ REJECTED ]
 
 
 ## Methods
