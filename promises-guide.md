@@ -96,7 +96,7 @@ promise remains `pending`.  The handler is called as a function, from the system
 stack.  If the thenable promise fulfilled with value, `resolveHandler(value)` is
 called; if the thenable rejected with a reson, `rejectHandler(reason)` is called.  In
 both cases, the new promise will fulfill or resolve with the return value of the
-andler function (including undefined).  Note that the new promise is always
+handler function (including undefined).  Note that the new promise is always
 _fulfilled_, even when the thenable promise rejects; the only time the new promise
 rejects is if the handler throws.  If the handler throws (`resolveHandler` or
 `rejectHandler`, whichever was called), the new promise rejects with the thrown value
