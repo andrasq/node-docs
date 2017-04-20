@@ -8,7 +8,7 @@ returned value, kind of like an event emitter with a memory.
 ## States
 
 A promise exists in one of two states:  _pending_ or _settled_, each having two
-sub-states:  pending _unresolved_ or _resolved__, and settled _fulfilled_ or
+sub-states:  pending _unresolved_ or _resolved_, and settled _fulfilled_ or
 _rejected_.  The state transitions are _create_, _resolve_, _fulfill_ and _reject_.
 
 States:
