@@ -101,7 +101,7 @@ both cases, the new promise will fulfill / resolve with the return value of the
 handler function (including undefined).  The new promise is always _fulfilled_, even
 when the thenable promise rejects; the only time the new promise rejects is if the
 handler throws.  If the handler throws (`resolveHandler` or `rejectHandler`, whichever
-was called), the new promise rejects with the thrown value used as the reason.
+was called), the new promise rejects with the thrown value as the reason.
 
 
 ## Thenables
