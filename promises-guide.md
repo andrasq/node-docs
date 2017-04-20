@@ -13,7 +13,7 @@ _rejected_.  The state transitions are _create_, _resolve_, _fulfill_ and _rejec
 
 States:
 
-- `pending` A newy created promise is `pending`. A pending promise has no value
+- `pending` A newly created promise is `pending`. A pending promise has no value
    associated with it yet, and is unresolved (no source is known for the value); its
    fate is undetermined.  This is a transitional state until the promise is resolved
    or settled.
