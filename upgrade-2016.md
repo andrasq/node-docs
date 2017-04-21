@@ -136,6 +136,8 @@ The Good.
 - using "auto" voltage lets the cpu idle at very low temperatures (1 degree above ambient)
 - tremendous memory bandwidth, `memtest86+ 5.0.1` reports 24gb/sec copy speed at 2400
 - populating all four memory slots retains bandwidth, 26.4gb/sec at 2400 MHz and 28.1 at 2530
+- total power consumption down by 60W, from 118W idle to 58W, due to fewer devices and
+  leaving the automatic clock and power management enabled.
 
 The Bad.
 
