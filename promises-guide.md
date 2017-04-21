@@ -4,6 +4,8 @@ A promise can be thought of as an `(error, value)` callback wrapped in a closure
 The closure can notify when the value becomes available, or can share the already
 returned value, kind of like an event emitter with a memory.
 
+Promises can be chained to percolate values or propagate state (typically for
+resolve and reject, respectively).
 
 ## States
 
@@ -102,6 +104,10 @@ handler function (including undefined).  The new promise is always _fulfilled_, 
 when the thenable promise rejects; the only time the new promise rejects is if the
 handler throws.  If the handler throws (`resolveHandler` or `rejectHandler`, whichever
 was called), the new promise rejects with the thrown value as the reason.
+
+### promise.catch( rejectHandler )
+
+Just like `promise.then` but with only the rejectHandler specified.
 
 
 ## Thenables
