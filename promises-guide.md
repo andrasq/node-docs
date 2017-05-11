@@ -78,7 +78,9 @@ promise will resolve and will take on the value of the returned promise when it
 becomes available.  `new Promise` can return either a `pending`, a `resolved` or a
 `settled` (`fulfilled` or `rejected`) promise, depending on what the executor
 initializes it with.  If the executor throws an error before calling either `resolve`
-or `reject`, the new promise rejects with the thrown error as the reason.
+or `reject`, the new promise rejects with the thrown error as the reason.  If the
+executor throws after calling `resolve` or `reject`, or calls them more than once,
+the error and/or the second and following calls are ignored.
 
 ### P.resolve( value )
 
