@@ -25,8 +25,8 @@ prints
         x = new Array(); for (var i=0; i<3; i++) x.push(i);
     }": 10000000 loops in 0.1259 of 0.20 sec: 79414906.81 / sec, 0.000013 ms each
 
-The results are fairly repeatable (though the large nodejs variability is as much as
-5-6% from run to run; here one outlier changes the 2% to 9.5%):
+The results are fairly repeatable (though the nodejs variability is as much as 5-6%
+from run to run; here one outlier changes 2% to 9.5%):
 
     10000000 loops in 0.1264 of 0.20 sec: 79086399.40 / sec, 0.000013 ms each
     10000000 loops in 0.1277 of 0.20 sec: 78309083.20 / sec, 0.000013 ms each
@@ -36,7 +36,7 @@ The results are fairly repeatable (though the large nodejs variability is as muc
     10000000 loops in 0.1252 of 0.20 sec: 79874822.56 / sec, 0.000013 ms each
     10000000 loops in 0.1258 of 0.20 sec: 79465720.53 / sec, 0.000013 ms each
 
-The timer is sensitive enough to measure small variations in code:
+The timer is sensitive enough to measure small variations in the code:
 
     "function(){
         x = new Array(); for (var i=1; i<=3; i++) x.push(i);
@@ -54,10 +54,10 @@ The timer is sensitive enough to measure small variations in code:
         x = [1, 2, 3];
     }": 10000000 loops in 0.0578 of 0.13 sec: 172954896.95 / sec, 0.000006 ms each
 
-Looks like there is a slight difference between `<` and `<=` as the loop test, a much
-larger difference looping over one more element, a large speed penalty to passing the
+Looks like there may be a slight difference between `<` and `<=` as the loop test, a much
+larger difference looping over an extra array element, a large speed penalty to passing the
 array elements to the constructor, and a huge 3x speed advantage to creating static
-arrays.  (For clarity, I omitted the separate test source listing, since the test
+arrays.  (For clarity, here I omitted the separate test source listing, since the test
 results include the function body.)
 
 The test can be looped by time instead of loop count, just specify a non-integer
@@ -96,8 +96,8 @@ prints
     Done.
 
 Note that the callback didn't have to be wrappered in `setImmediate(cb)` or
-`process.nextTick(cb)`; qtimeit will not allow the call stack to overflow.
-(The reported rate is 3% off the callback-less result; see Todo below.)
+`process.nextTick(cb)`; qtimeit will not cause the call stack to overflow.
+(This reported rate is 3% off the callback-less result; see Todo below.)
 
 
 ### qtimeit.bench()
@@ -137,7 +137,7 @@ The comparison includes the measured execution speed (expressed as a rate, calls
 the test function per second), stats about each run, and the relative rate of each test
 compared to the rate of the first test run.
 
-The repoted times are roughly the same as when run by count; the differences are
+The reported times are roughly the same as when run by count; the differences are
 partly due to `bench` internals (a work in progress, see Todo below) and partly
 possibly to heap effects since the heap contents are affected by the prior tests.
 
@@ -197,6 +197,10 @@ arrays, like last time),
 The static array creation speed is back to what it was without a callback, but passing
 the elements to new Array is still much faster than without a callback.
 
+Also note the platform identification above the test results.  This includes the
+software versions and operating system settings likely to affect performance,
+including the actual measured cpu speed.
+
 
 ## Errors
 
@@ -210,13 +214,14 @@ the elements to new Array is still much faster than without a callback.
 - optimization: invariant code motion
 - optimization: dead code elimination
 
+
 ## Accuracy
 
 How can we know that these numbers correspond to reality?
 
 Without knowing the true time taken for a test, we can still expect that doubling the
-work done should double the time taken.  So we'll create two identical arrays, or
-maybe three:
+work done should double the runtime.  So we'll create two identical arrays, or maybe
+three:
 
     "function (){
         x = new Array(); for (var i=0; i<3; i++) x.push(i);
