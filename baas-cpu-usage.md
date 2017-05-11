@@ -116,9 +116,10 @@ Know Your Platform
 
 Throughout it all, we were taking nodejs for granted.  Much to our surprise, the
 great results we saw under node-v6.2.2 broke under node-v6.9.1; the heap balloons and
-the code core dumps.  This one is still a work in progress -- apparently the newer
-node gathers many dead objects in old object space, does not garbage collect them,
-and crashes on a memory allocation error.  The identical code runs fine under 6.2.2.
+the code core dumps.  The identical code ran fine under 6.2.2; we had to revert back
+to the old node.  Turned out nodejs acquired a memory leak when `timeout` was used
+in combination with `keepAlive`, which got fixed only in version v6.10.0.  So
+upgrade carefully, and vet your tools and platform both.
 
 
 Future Work
