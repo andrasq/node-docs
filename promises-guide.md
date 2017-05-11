@@ -61,8 +61,8 @@ Transitions:
         fulfill / reject <--- [ RESOLVED ] --+
                |
                V
-          [ FULFILLED ]
-          [ REJECTED ]
+          [ SETTLED FULFILLED ]
+          [ SETTLED REJECTED ]
 
 
 ## Methods
@@ -84,30 +84,42 @@ or `reject`, the new promise rejects with the thrown error as the reason.
 
 Creates a new promise initialized to value, equivalent to `new
 Promise(function(resolve, reject) { resolve(value); })`.  The returned promise may
-be `pending`, `resolved` or `settled` (`fulfilled`).
+be pending but `resolved` (value was a pending promise), `settled fulfilled` (value
+was a constant or a fulfilled promise), or `settled rejected` (value was a rejected
+promise).
 
 ### P.reject( reason )
 
 Creates a new promise already rejected with reason, equivalent to `new
 Promise(function(resolve, reject) { reject(reason); })`.  The returned promise is
-`settled` (`rejected`).
+`settled` (`rejected`).  Note that `reject()` always rejects:  if rejected with a
+fulfilled promise, the promise object will be the rejection reason.
 
 ### promise.then( resolveHandler, rejectHandler )
 
 Creates a new promise that will fulfill with the value returned by the handler
-function.  The handler is called once the thenable promise settles, until then the new
-promise remains `pending`.  The handler is called as a function, from the system call
-stack.  If the thenable promise fulfilled with value, `resolveHandler(value)` is
-called; if the thenable rejected with a reson, `rejectHandler(reason)` is called.  In
-both cases, the new promise will fulfill / resolve with the return value of the
-handler function (including undefined).  The new promise is always _fulfilled_, even
-when the thenable promise rejects; the only time the new promise rejects is if the
-handler throws.  If the handler throws (`resolveHandler` or `rejectHandler`, whichever
-was called), the new promise rejects with the thrown value as the reason.
+function.  The handler is called when the thenable promise settles, until then the
+new promise remains `pending`.  The handler is called as a function (`this` unset),
+from the system (not application) call stack.
+
+If the thenable promise fulfills with a value, `resolveHandler(value)` is called;
+if the thenable rejects with a reson, `rejectHandler(reason)` is called.  In both
+cases, the new promise will fulfill / resolve with the value (even `undefined`)
+returned by the handler function.  If the appropriate handler was not specified (or
+was not a function), the new promise takes on the state and value/reason of the
+thenable promise.
+
+Caution: the new promise is always _fulfilled_, even when the thenable promise
+rejects; the only time the new promise rejects is if the handler throws.  If the
+called handler throws, the thrown value will be the rejection reason.  So for
+example, `Promise.reject("no").then(null, (e) => { return "yes" })` returns a
+promise fulfilled with "yes", and `Promise.resolve("yes").then((v) => { throw "no"
+})` return a promise rejected with "no".
 
 ### promise.catch( rejectHandler )
 
-Just like `promise.then` but with only the rejectHandler specified.
+Same as `promise.then(null, rejectHandler)`, `then` with only the rejectHandler
+specified.
 
 
 ## Thenables
