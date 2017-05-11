@@ -111,16 +111,16 @@ returned by the handler function.  If the appropriate handler was not specified 
 was not a function), the new promise takes on the state and value/reason of the
 thenable promise.
 
-Caution: the new promise is always _fulfilled_, even when the thenable promise
-rejects; the only time the new promise rejects is if the handler throws.  If the
-called handler throws, the thrown value will be the rejection reason.  So for
-example, `Promise.reject("no").then(null, (e) => { return "yes" })` returns a
-promise fulfilled with "yes", and `Promise.resolve("yes").then((v) => { throw "no"
-})` return a promise rejected with "no".
+Caution: the new promise returned from `then` is _always_ _fulfilled_, even when the
+thenable promise rejects; the only time it is rejected is if the handler throws.  If
+the called handler throws, the thrown value will be the rejection reason.  So for
+example, `Promise.reject("no").then(null, (e) => { return "yes" })` returns a promise
+fulfilled with "yes", and `Promise.resolve("yes").then((v) => { throw "no" })` return
+a promise rejected with "no".
 
 ### promise.catch( rejectHandler )
 
-Same as `promise.then(null, rejectHandler)`, `then` with only the rejectHandler
+Same as `promise.then(null, rejectHandler)`: `then` with only the rejectHandler
 specified.
 
 
