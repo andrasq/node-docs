@@ -131,3 +131,9 @@ A "thenable" is any object with a method `then` whose behavior is compatible wit
 promise system's.  The promise can settle with the value of a thenable by by calling
 the theanable's `then` method; `then` must call one of the handlers to fulfill with a
 value, reject with a reason, or resolve with another promise or thenable.
+
+
+## Related Work
+
+- [q-then](https://github.com/andrasq/node-q-then) - very fast promises reference implementation
+  and limited bibliography
