@@ -133,6 +133,37 @@ the theanable's `then` method; `then` must call one of the handlers to fulfill w
 value, reject with a reason, or resolve with another promise or thenable.
 
 
+## Conversions
+
+Interoperability between callbacks and promises is easily achieved with
+small conversion functions to adapt callbacks to promises and promises to callbacks:
+
+To convert a callbacked function into one that returns a promise:
+
+    function promisify( callbackedFunction ) {
+        return function() {
+            var args = Array.prototype.slice.call(arguments, 0);
+            return new Promise(function executor(resolve, reject) {
+                args.push(function(err, ret) { err ? reject(err) : resolve(ret) });
+                callbackedFunction.apply(null, args);
+            });
+        }
+    }
+
+To convert a function returning into a promise into a function taking a callback:
+
+    function callbackify( promiseFunction ) {
+        return function() {
+            var args = Array.prototype.slice.call(arguments, 0);
+            var cb = args.pop();
+            var promise = promiseFunction.apply(null, args);
+            promise.then(
+                function(v) { cb(null, v) },
+                function(e) { cb(e) }
+            );
+        }
+    }
+
 ## Related Work
 
 - [q-then](https://github.com/andrasq/node-q-then) - very fast promises reference implementation
