@@ -46,11 +46,12 @@ Transitions:
 
 - `reject` Settle the promise with a rejection reason into the terminal state "rejected"
 
-- `resolve` When resolved, the promise commits to taking on the state and value
-   (or eventual state and value) of another promise or thenable.  Once resolved,
-   subsequent attempts resolve or settle it will be ignored, with the exception of
-   the resolving promise itself.  It is possible to resolve with a promise multiple
-   times before settling.
+- `resolve` On resolve, the promise `p1` commits to taking on the state and value
+   (or eventual state and value) of another promise or thenable `p2`.  Once resolved,
+   subsequent attempts to resolve or settle `p1` will be ignored, execpt if by the
+   resolving promise `p2` itself. If the resolving promise `p2` resolves with a
+   promise `p3`, `p3` becomes the resolving promise whose value will settle `p1`.
+   This way it is possible to resolve with a promise multiple times before settling.
 
              create
                |
