@@ -15,7 +15,7 @@ prints timing stats about the runs.
 
     var qtimeit = require('qtimeit');
     var x;
-    qtimeit(10000000; function(){
+    qtimeit(10000000, function(){
         x = new Array(); for (var i=0; i<3; i++) x.push(i);
     })
 
