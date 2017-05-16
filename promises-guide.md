@@ -86,20 +86,25 @@ new promise rejects with the thrown error as the reason.  If the executor throws
 after calling `resolve` or `reject`, or calls them more than once, the error and/or
 the second and following calls are ignored.
 
-### P.resolve( value )
+### Promise.resolve( value )
 
-Creates a new promise initialized to value, equivalent to `new
-Promise(function(resolve, reject) { resolve(value); })`.  The returned promise may
-be pending but `resolved` (value was a pending promise), `settled fulfilled` (value
-was a constant or a fulfilled promise), or `settled rejected` (value was a rejected
-promise).
+Creates a new promise initialized to value.  The returned promise may be pending but
+`resolved` (value was a pending promise), `settled fulfilled` (value was a constant or
+a fulfilled promise), or `settled rejected` (value was a rejected promise).
 
-### P.reject( reason )
+Equivalent to
 
-Creates a new promise already rejected with reason, equivalent to `new
-Promise(function(resolve, reject) { reject(reason); })`.  The returned promise is
+    new Promise(function(resolve, reject) { resolve(value); });
+
+### Promise.reject( reason )
+
+Creates a new promise already rejected with reason.  The returned promise is
 `settled rejected`.  Note that `reject()` always rejects:  if rejected with a
 fulfilled promise, the promise object will be the rejection reason.
+
+Equivalent to
+
+    new Promise(function(resolve, reject) { reject(reason); });
 
 ### promise.then( resolveHandler, rejectHandler )
 
@@ -125,9 +130,11 @@ a promise rejected with "no".
 
 ### promise.catch( rejectHandler )
 
-Same as `promise.then(null, rejectHandler)`: `then` with only the rejectHandler
-specified.
+Same as `then()` with only the rejectHandler specified.
 
+Equivalent to
+
+    promise.then(null, rejectHandler);
 
 ## Surprises
 
