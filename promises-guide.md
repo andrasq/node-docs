@@ -129,6 +129,26 @@ Same as `promise.then(null, rejectHandler)`: `then` with only the rejectHandler
 specified.
 
 
+## Surprises
+
+Some aspects of promises are not readily intuitive
+
+- resolve and reject are not symmetric, reject always rejects: rejecting with a promise
+  will use the promise object as the rejection reason, not its eventual value
+
+- `undefined` behaves as a value: if the resolve or reject handler does not return
+  anything, the implicit `undefined` value is used to settle or reject
+
+- `.then` rejectHandler fulfills: if the `then` reject handler function returns, the
+  promise returned by `then()` will be fulfilled
+
+- `.catch` fulfills: same as a rejectHandler, if the .catch handler function returns
+  (does not throw), the promise returned by `catch()` will be fulfilled
+
+- errors thrown by the executor after the new promise has been settled or resolved
+  are ignored; the application will not know about them
+
+
 ## Thenables
 
 A "thenable" is any object with a method `then` whose behavior is compatible with the
