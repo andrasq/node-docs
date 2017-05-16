@@ -140,6 +140,9 @@ Equivalent to
 
 Some aspects of promises are not readily intuitive
 
+- resolve with promise does not always settle: resolving with a pending promise just
+  changes the linkage, it does not cause the promise to be settled
+
 - resolve and reject are not symmetric, reject always rejects: rejecting with a promise
   will use the promise object as the rejection reason, not its eventual value
 
@@ -181,7 +184,7 @@ To convert a callbacked function into one that returns a promise:
         }
     }
 
-To convert a function returning into a promise into a function taking a callback:
+To convert a function returning a promise into a function taking a callback:
 
     function callbackify( promiseFunction ) {
         return function() {
@@ -197,5 +200,5 @@ To convert a function returning into a promise into a function taking a callback
 
 ## Related Work
 
-- [q-then](https://github.com/andrasq/node-q-then) - very fast promises reference implementation
-  and limited bibliography
+- [q-then](https://github.com/andrasq/node-q-then) - fast promises reference implementation
+  with limited bibliography
