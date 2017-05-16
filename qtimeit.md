@@ -2,9 +2,9 @@ Benchmarking With Qtimeit
 =========================
 
 
-Qtimeit is a very easy to use utility for accurately benchmarking nodejs code and
-language features.  It measures just the test code, not the test loop or the call to
-the test function itself.
+[Qtimeit](https://npmjs.com/package/qtimeit) is a very easy to use utility for
+accurately benchmarking nodejs code and language features.  It measures just the test
+code, not the test loop or the call to the test function itself.
 
 ## Overview
 
@@ -266,3 +266,8 @@ Areas that could use some TLC:
 - `bench()`, especially bench with callback, does not fully agree with `qtimeit()`
 - calibrated runs are less repeatable than counted runs
 - calibration errors have a disproportionately large effect on small functions
+
+
+## Resources
+
+- [qtimeit](https://npmjs.com/package/qtimeit) - the npm package
