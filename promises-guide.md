@@ -70,18 +70,21 @@ Transitions:
 
 ### new Promise( executor(resolve, reject) )
 
-Creates a new promise resolved or settled to the return value of the first one of
-the `resolve` or `reject` functions to return.  If `resolve` returns a value (not a
-promise or a thenable) the new promise will immediately fulfill with the value; if
-`reject` returns a reason, the new promise will immediately reject with the reason.
-Undefined counts as a reason.  If `resolve` returns a promise or a thenable, the new
-promise will resolve and will take on the value of the returned promise when it
-becomes available.  `new Promise` can return either a `pending`, a `resolved` or a
-`settled` (`fulfilled` or `rejected`) promise, depending on what the executor
-initializes it with.  If the executor throws an error before calling either `resolve`
-or `reject`, the new promise rejects with the thrown error as the reason.  If the
-executor throws after calling `resolve` or `reject`, or calls them more than once,
-the error and/or the second and following calls are ignored.
+Creates a new promise initialized by the `executor` function.  The state of the
+returned promise can be any one of `pending`, `resolved`, `fulfilled` or `rejected`,
+depending on what the executor does.
+
+Until the executor resolves or rejects, the new promise is `pending`.  If the
+executor calls `resolve` with a value or `undefined` (anything other than a promise
+or a thenable) the new promise will fulfill with the value.  If it calls `resolve`
+with a promise or a thenable, the new promise will resolve and take on the value of
+resolving promise when it becomes available.  If it calls `reject`, the new promise
+will immediately reject with the reject argument (or `undefined`) as the reason.
+
+If the executor throws an error before calling either `resolve` or `reject`, the
+new promise rejects with the thrown error as the reason.  If the executor throws
+after calling `resolve` or `reject`, or calls them more than once, the error and/or
+the second and following calls are ignored.
 
 ### P.resolve( value )
 
@@ -95,15 +98,16 @@ promise).
 
 Creates a new promise already rejected with reason, equivalent to `new
 Promise(function(resolve, reject) { reject(reason); })`.  The returned promise is
-`settled` (`rejected`).  Note that `reject()` always rejects:  if rejected with a
+`settled rejected`.  Note that `reject()` always rejects:  if rejected with a
 fulfilled promise, the promise object will be the rejection reason.
 
 ### promise.then( resolveHandler, rejectHandler )
 
 Creates a new promise that will fulfill with the value returned by the handler
-function.  The handler is called when the thenable promise settles, until then the
-new promise remains `pending`.  The handler is called as a function (`this` unset),
-from the system (not application) call stack.
+function.  The handler corresponding to the settled state is called when the
+thenable promise settles, until then the new promise remains `pending`.  The
+handler is invoked as a function call (`this` unset), from the system (not
+application) call stack.
 
 If the thenable promise fulfills with a value, `resolveHandler(value)` is called;
 if the thenable rejects with a reson, `rejectHandler(reason)` is called.  In both
