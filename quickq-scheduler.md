@@ -38,11 +38,11 @@ Scheduling
 Adding scheduling to quickq is done with a constructor option.
 
     var queueOptions = {
-        concurrency: 10,
+        concurrency: 10,          // default 10
         scheduler: 'fair',
         schedulerOptions: {
-            maxTypeShare: 0.80,
-            maxScanLength: 1000,
+            maxTypeShare: 0.80,   // default 0.8
+            maxScanLength: 1000,  // default 1000
         },
     };
     var queue = new Quickq(noopJobRunner, queueOptions);
