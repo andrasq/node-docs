@@ -78,10 +78,13 @@ Integration
 
 Applying queue-based scheduling to a middleware stack is very straight-forward, a
 middleware step can be created to queue its callback.  The middleware will execute when
-the queue job runs.
+the queue job runs.  When the middleware stack finishes, it notifies the queue that
+the job is done.
 
-    var scheduleRequest = function(job) {
+    var scheduleRequest = function(job, cb) {
+        var req = job[0];
         var next = job[2];
+        req._jobDoneCb = cb;
         next();
     }
     var schedulerQueue = new Quickq(schedulerRequest, {scheduler: 'fair'});
@@ -91,10 +94,15 @@ the queue job runs.
         // Scheduling is by the request path.
         schedulerQueue.pushType(req.path(), [req, res, next]);
     })
+    app.after(function(req, res, next) {
+        req._jobDoneCb();
+        next();
+    })
 
-Scheduling resource allocation can be done by matching jobs to resources.
-The trick is to separate the job from its callback:  the job calls the resource
-user callback, and the job callback is invoked from the `freeResource`.
+Scheduling resource allocation can be done by matching jobs to resources.  Like
+scheduling middleware, the trick is to separate the job from its callback:  the job
+calls the resource user callback, and the job callback is invoked from the
+`freeResource`.
 
     // allocate and use resource, arrange to notify scheduler when done
     function obtainAndUseResource( job, cb ) {
