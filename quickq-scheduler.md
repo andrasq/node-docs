@@ -9,7 +9,7 @@ scheduler is a practical and convenient option for adding smarts to job manageme
 Quickq Overview
 ---------------
 
-Quickq is very similar to [`async.queue`](https://npmjs.com/package/async), a job queue
+Quickq is very similar to [`async.queue`](https://npmjs.com/package/async).  A job queue
 is constructed with a runner and options, jobs are pushed onto the queue, and are
 started in arrival order.
 
