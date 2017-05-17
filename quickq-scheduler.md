@@ -52,11 +52,25 @@ Adding scheduling to quickq is done with a constructor option.
 If the queue is created with a scheduler, the job type must be specified for each job
 queued with `pushType` or `unshiftType`; it is an error to `push` or `unshift`.
 
-Scheduling is done by job type.  Jobs are run in arrival order, except when there are
-too many jobs all of a type already running, jobs of that type will be skipped when
+Scheduling is done by job type.  Jobs are run in arrival order, except that when there
+are too many jobs of one type already running, jobs of that type will be skipped when
 selecting the next job to run.  "Too many" is controlled by `maxTypeShare` (default 80%)
 of the available job slots specified with `concurrency`, or more than the type's share
-of the count of jobs waiting to run.
+of the count of jobs waiting to run.  If all waiting jobs (among the first 1000
+maxScanLength waiting) are skipped, the oldest waiting (first in line) will be run.
+
+For example, given job types A, B, C and D, concurrency 4 and maxTypeShare 50%, no type
+will run more than 2 jobs while other types are waiting (50% maxTypeShare), and no type
+will run more than its fraction of the total jobs waiting.
+
+|| Waiting || Running || Run Next || Notes ||
+| ABC       | A        | A         | A using 25% < 50% max, < 33% share of waiting |
+| ABC       | AA       | B         | A using 50% >= 50% max |
+| ABBB      | AB       | B         | A using 25% >= 25% share of waiting |
+| ABCD      | AB       | C         | A,B using 25% >= 25% share of waiting |
+| AAB       | AAB      | A         | A using >= 50% max, B using 33% >= 33% waiting, so run oldest |
+| ABB       | AAB      | B         | A using >= 50% max, but B share 33% < 67% waiting |
+| AAA       | AAA      | A         | no other type waiting |
 
 
 Custom Scheduling
