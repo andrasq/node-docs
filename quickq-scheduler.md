@@ -63,14 +63,14 @@ For example, given job types A, B, C and D, concurrency 4 and maxTypeShare 50%, 
 will run more than 2 jobs while other types are waiting (50% maxTypeShare), and no type
 will run more than its fraction of the total jobs waiting.
 
-    Waiting  Running  Run Next  Notes
-    ABC      A        A         A using 25% < 50% max, < 33% share of waiting
-    ABC      AA       B         A using 50% >= 50% max
-    ABBB     AB       B         A using 25% >= 25% share of waiting
-    ABCD     AB       C         A,B using 25% >= 25% share of waiting
-    AAB      AAB      A         A using >= 50% max, B using 33% >= 33% waiting, so run oldest
-    ABB      AAB      B         A using >= 50% max, but B share 33% < 67% waiting
-    AAA      AAA      A         no other type waiting
+    Waiting  Running  Next  Notes
+    ABC      A        A     A using 25% < 50% max, < 33% share of waiting
+    ABC      AA       B     A using 50% >= 50% max
+    ABBB     AB       B     A using 25% >= 25% share of waiting
+    ABCD     AB       C     A,B using 25% >= 25% share of waiting
+    AAB      AAB      A     A using >= 50% max, B using 33% >= 33% waiting, so run oldest
+    ABB      AAB      B     A using >= 50% max, but B share 33% < 67% waiting
+    AAA      AAA      A     no other type waiting
 
 
 Custom Scheduling
