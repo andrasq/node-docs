@@ -1,5 +1,6 @@
 Benchmarking With Qtimeit
 =========================
+2017-05-10 - Andras.
 
 
 [Qtimeit](https://npmjs.com/package/qtimeit) is a very easy to use utility for

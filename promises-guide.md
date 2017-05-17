@@ -1,4 +1,5 @@
 # Promises -- A Quick Reference Guide
+2017-04-19 - Andras.
 
 A promise can be thought of as an `(error, value)` callback wrapped in a closure.
 The closure can notify when the value becomes available, or can share the already

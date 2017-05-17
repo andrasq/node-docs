@@ -1,5 +1,6 @@
 Fair-Share Scheduling With Quickq
 =================================
+2017-05-17 - Andras.
 
 Quickq is a lean, fast in-memory JavaScript job runner.  Its built-in fair-share
 scheduler is a practical and convenient option for adding smarts to job management.
