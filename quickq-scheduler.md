@@ -10,17 +10,17 @@ Quickq Overview
 ---------------
 
 Quickq is very similar to [`async.queue`](https://npmjs.com/package/async).  A job queue
-is constructed with a runner and options, jobs are pushed onto the queue, and are
+is constructed with a job runner function and options, jobs are pushed onto the queue, and are
 started in arrival order.
 
     var ncalls = 0;
-    function noopJobRunner( jobPayload, callback ) {
+    function myJobRunner( jobPayload, callback ) {
         ncalls += 1;
         callback();
     }
 
     var Quickq = require('quickq');
-    var queue = new Quickq(noopJobRunner, 10);
+    var queue = new Quickq(myJobRunner, 10);
     queue.push({a:1});
     queue.push({a:2});
 
@@ -39,13 +39,13 @@ Adding scheduling to quickq is done with a constructor option.
 
     var queueOptions = {
         concurrency: 10,          // default 10
-        scheduler: 'fair',
+        scheduler: 'fair',        // default not scheduled
         schedulerOptions: {
             maxTypeShare: 0.80,   // default 0.8
             maxScanLength: 1000,  // default 1000
         },
     };
-    var queue = new Quickq(noopJobRunner, queueOptions);
+    var queue = new Quickq(myJobRunner, queueOptions);
     queue.pushType('jobtypeA', {a:1});
     queue.pushType('jobtypeB', {a:2});
 
