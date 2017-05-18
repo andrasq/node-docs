@@ -2,6 +2,7 @@ Faster BSON to JSON
 ===================
 
 Kinvey Hackathon, May 2 2016.
+2016-05-04 - AR.
 
 A common use case for mongodb data is to relay it to a remote user.  Remote data is
 typically consumed in serialized JSON wire format; mongo sends data serialized in
