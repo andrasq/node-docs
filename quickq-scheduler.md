@@ -86,6 +86,8 @@ schedule.  The scheduler must implement methods
   select one of them to run, and returns its index `0 .. size()-1`. Note that the list
   of waiting types may be redundant, if jobs are always appended then the same
   information is available from the waiting / start / done calls.
+  [`qlist`](https://npmjs.com/package/qlist) is a very fast double-ended list
+  implemented as a circular buffer.
 
 Integration
 -----------
@@ -167,7 +169,8 @@ However, this is still much faster than the non-scheduled `async.queue` or `fast
 References
 ----------
 
-- [async](https://npmjs.com/package/async)
-- [fastq](https://npmjs.com/package/fastq)
-- [quickq](https://npmjs.com/package/quickq)
-- [qlist](https://npmjs.com/package/qlist)
+- [async](https://npmjs.com/package/async) - async package, includes job queue
+- [fastq](https://npmjs.com/package/fastq) - fastq job queue
+- [quickq](https://npmjs.com/package/quickq) - quickq job queue
+- [qlist](https://npmjs.com/package/qlist) - fast double-ended list
+- [fair-scheduler](https://github.com/andrasq/node-docs/master/blob/fair-queue-scheduler.md)
