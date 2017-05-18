@@ -173,4 +173,4 @@ References
 - [fastq](https://npmjs.com/package/fastq) - fastq job queue
 - [quickq](https://npmjs.com/package/quickq) - quickq job queue
 - [qlist](https://npmjs.com/package/qlist) - fast double-ended list
-- [fair-scheduler](https://github.com/andrasq/node-docs/master/blob/fair-queue-scheduler.md)
+- [fair-scheduler](https://github.com/andrasq/node-docs/blob/master/fair-queue-scheduler.md) - notes on multi-tenant fairness
