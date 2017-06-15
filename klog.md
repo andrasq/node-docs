@@ -66,9 +66,9 @@ Performance
 Measured the count of 200-byte newline terminated lines logged to the "remote"
 server (another process running on the same host).
 
-* up to 65 mb/s received and 45 mb/s persisted per second
-* 2x performance gain by selecting packages more carefully (`request` is very slow)
-* 20x throughput gain by using a better protocol (one-way rpc vs http)
+* up to 65 mb/s received and 45 mb/s persisted
+* 2x performance gain from faster packages (`request` is very slow)
+* 20x throughput gain by also using a better protocol (one-way rpc vs http)
 * 60-90x performance gain by working with async batches in near-realtime
 
 Some test details:
