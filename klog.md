@@ -2,75 +2,71 @@ klog
 ====
 Kinvey Hackathon, 2017-06-14 - [Andras](https://npmjs.com/~andrasq).
 
-* Fast, robust remote logging service.
-* A true microservice:
-  - a service that is small and light (dependencies count!)
-  - and of course a service that does little
-* 500 lines of code, 2 mb of dependencies
-* Easy to use, plug-and-play with the `qlogger` fast logger
-* Use a scooter for small loads (even though we standardize on trucks.  Oops.)
-  - scooter has 4% the overhead of the truck, and can run 20x faster
-* Leverages several other "scooters" from my toolkit
-* Not a full service, it's a package with `createServer()` and `createClient` methods
+The last time, wrote a function.
+This time a pacakge.
+Hey, progress!
 
 Objectives
-----------
+----------------
 
 * low latency with negligible overhead (existing services can use it to remote log)
-* robust (should not lose checkpointed loglines)
 * high volume (to ship existing files in bulk)
-* scriptable, service can be used from the command line with `curl`
-* multi-writer safe (multiple processes ok to log to same file)
-* convenient to use, can be added as a `qlogger` log writer
+* robust (should not lose checkpointed loglines)
+* fault tolerant (should not require the remote to be always up)
+* scriptable, usable from the command line (with `curl`)
+* multi-writer, multi-process safe (ok to share logfile)
+* convenient to use, can plug into existing loggers (`qlogger` writer)
+* the idea and approach date back to 2012 and earlier
+
+Results
+----------------
+
+* Fast, robust remote logging
+* A true microservice:
+  - a service that is small and light (dependencies count!)
+  - and of course one that does little
+* not a full service: package with createServer() and createClient() methods
+* a scooter better for some loads, not always a truck
+  - "scooter" has 4% the overhead of the "truck", up to 20x faster
+  - Leverages other "scooters" from my toolkit
 
 Implementation
---------------
+----------------
 
+* 500 lines of code, 2 mb of dependencies
 * client has 2 methods, `write` and `fflush`
 * server has 2 methods, `write` and `fflush`
-* client is configured to talk to a server
+* each client talks to one server
 * each client logs to one remote logfile
 * one socket per client
 * a server can handle multiple logfiles (configured at startup)
+* server can manage multiple logfiles
 * server can talk both http and rpc
 * rpc splits the requests (log writes) from the responses (acks);
-  acks must be requested separately.  Runs up to 20x faster
-* direct remote logging is possible; line is sent immediately, but
+  acks must be requested separately.  Runs much faster.
+* direct remote logging via TCP is possible; line is sent immediately, but
   caller must sync explicitly
-
-Operationally,
-
-* server http: listen for line, append line (`express` and `restiq`)
-* server rpc: listen for line, append line (`qrpc`)
-* client http: send line, wait for ack
-* client rpc: send line, ack later
-* client bulk: checkpoint line to local journal, swap journals, upload in batches,
-  ack when done.  Multi-process safe journal swapping is built into `qfputs`.
-* locally checkpointed line is synced to server after 10ms
+* local staging journal supported, automatically uploads journal contents
 * the server framework is provided, but the server actions are undefined.
   The test server appends to a local logfile, or just counts lines received.
 
-Lessons Learned
----------------
+Operationally,
 
-* Standardized approach can greatly limit performance
-* Understand your tools (request halves the service throughput)
-* Trust the libraries (the bug was in the new code, not qbuffer)
-* Careful when benchmarking fast services (3-4gb files in a couple of dozen seconds)
-* Hard to measure file transport throughput
-  - need to run test for several seconds to get a good read
-  - several seconds can generate and ship gigabytes of logs
-  - disk-based filesystem can stall to write to disk
-  - 6 gb memory-based filesystem /dev/shm filled up
-  - (workaround was to split the tests and run selected subsets at a time)
+* server http: listen for line, append line (`express` and `restiq`), ack call
+* client http: send line, wait for ack
+* server rpc: listen for line, append line (`qrpc`), ack when only when asked
+* client rpc: send line, ask for ack later
+* client bulk: checkpoint line to local journal, swap journals, upload in batches,
+  ack when done.  Multi-process safe journal swapping is built into `qfputs`.
+* locally checkpointed line is synced to server after 10ms
 
 Performance
------------
+----------------
 
 Measured the count of 200-byte newline terminated lines logged to the "remote"
 server (another process running on the same host).
 
-* up to 65 mb/s received and 45 mb/s persisted
+* up to 65 mb/s received and 45 mb/s persisted per second
 * 2x performance gain by selecting packages more carefully (`request` is very slow)
 * 20x throughput gain by using a better protocol (one-way rpc vs http)
 * 60-90x performance gain by working with async batches in near-realtime
@@ -127,8 +123,32 @@ AWS VM, lines persisted into server-side logfile:
     journaled klogClient      245,670 ops/sec  12284
 
 
+Status
+----------------
+
+* fully functional
+* all logged lines show up in server log in order, no duplicates, no omissions
+* good unit tests for server
+* light unit tests for client
+* no unit tests yet for client journaling mode
+
+Lessons Learned
+----------------
+
+* understand your tools (eg request halves throughput)
+* standardization is not always a win
+* trust the libraries (bug was in the new code, not qbuffer)
+* rpc is great!
+* careful when benchmarking
+  - 3-4gb files in a couple dozen seconds, a single test run
+  - hard to measure file transport throughput
+    - need several seconds for a good read, can be gigabytes
+    - disk-based filesystems can stall while writing to disk
+    - 6 gb memory-based filesystem /dev/shm filled up
+    (workaround was to split the tests and run subsets separately)
+
 Related Work
-------------
+----------------
 
 - [express](https://npmjs.com/package/express) - featureful REST framework
 - [request](https://npmjs.com/package/request) - featureful but slow http request library
