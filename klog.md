@@ -6,6 +6,17 @@ The last time, wrote a function.
 This time a pacakge.
 Hey, progress!
 
+Kitchen Sink Goals
+----------------
+
+* Remote logging
+* Log shipping
+* Durable, fault-tolerant logging
+* Use rpc for a real application
+* Compare http rest frameworks
+* Compare http request libraries
+* Compare http vs rpc
+
 Objectives
 ----------------
 
