@@ -9,7 +9,7 @@ Hey, progress!
 Objectives
 ----------------
 
-Log here, save there.
+Log here, save there.  Or, `curl -d@log.sav http://server/log/write`
 
 * low latency with negligible overhead (existing services can use it to remote log)
 * high volume (to ship existing files in bulk)
@@ -27,7 +27,7 @@ Results
 * A true microservice:
   - a service that is small and light (dependencies count!)
   - and of course one that does little
-* not a full service: package with createServer() and createClient() methods
+* not a standalone service: package with createServer() and createClient() methods
 * a scooter better for some loads, not always a truck
   - "scooter" has 4% the overhead of the "truck", up to 20x faster
   - Leverages other "scooters" from my toolkit
@@ -49,18 +49,18 @@ Implementation
 * direct remote logging via TCP is possible; line is sent immediately, but
   caller must sync explicitly
 * local staging journal supported, automatically uploads journal contents
-* the server framework is provided, but the actions are undefined.
+* the server provides the framework, but the actions are undefined.
   The test server appends to a local logfile, or just counts lines received.
 
 Operationally,
 
-* server http: listen for line, append line (`express` and `restiq`), ack call
+* server http: listen for line, append line, ack call (`express` and `restiq`)
 * client http: send line, wait for ack
-* server rpc: listen for line, append line (`qrpc`), ack when only when asked
+* server rpc: listen for line, append line, ack when only when asked (`qrpc`)
 * client rpc: send line, ask for ack later
 * journaled: checkpoint line to local journal, swap journals, upload in batches,
   ack when done.  Multi-process safe journal swapping is built into `qfputs`.
-* locally checkpointed line is synced to server after 10ms
+* locally checkpointed line is automatically synced to server after 10ms
 
 Sample Server
 ----------------
@@ -166,7 +166,7 @@ AWS VM, lines persisted into server-side logfile:
 Status
 ----------------
 
-Usable right now, though could use some more unit tests.
+Usable right now, though could use more unit tests.
 
 * fully functional
 * all logged lines show up in server log in order, no duplicates, no omissions
@@ -181,9 +181,11 @@ Lessons Learned
 * 3.5k/s is standard nodejs "best practices" state of the art
 * understand your tools (eg request halves throughput)
 * standardization is not always a win
-* trust the libraries (bug was in the new code, not qbuffer)
 * rpc is great!
 
+Also,
+
+* trust the libraries (bug was in the new code, not qbuffer)
 * careful when benchmarking
   - 3-4gb files in a couple dozen seconds, a single test run
   - hard to measure file transport throughput
