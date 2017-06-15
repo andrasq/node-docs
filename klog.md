@@ -9,6 +9,8 @@ Hey, progress!
 Objectives
 ----------------
 
+Log here, save there.
+
 * low latency with negligible overhead (existing services can use it to remote log)
 * high volume (to ship existing files in bulk)
 * robust (should not lose checkpointed loglines)
@@ -47,7 +49,7 @@ Implementation
 * direct remote logging via TCP is possible; line is sent immediately, but
   caller must sync explicitly
 * local staging journal supported, automatically uploads journal contents
-* the server framework is provided, but the server actions are undefined.
+* the server framework is provided, but the actions are undefined.
   The test server appends to a local logfile, or just counts lines received.
 
 Operationally,
@@ -56,7 +58,7 @@ Operationally,
 * client http: send line, wait for ack
 * server rpc: listen for line, append line (`qrpc`), ack when only when asked
 * client rpc: send line, ask for ack later
-* client bulk: checkpoint line to local journal, swap journals, upload in batches,
+* journaled: checkpoint line to local journal, swap journals, upload in batches,
   ack when done.  Multi-process safe journal swapping is built into `qfputs`.
 * locally checkpointed line is synced to server after 10ms
 
@@ -163,6 +165,8 @@ AWS VM, lines persisted into server-side logfile:
 
 Status
 ----------------
+
+Usable right now, though could use some more unit tests.
 
 * fully functional
 * all logged lines show up in server log in order, no duplicates, no omissions
