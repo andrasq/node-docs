@@ -88,7 +88,7 @@ Sample Client
 
     var klogClient = klog.createClient({
         qrpcPort: 4245,
-            host: 'localhost',
+        host: 'localhost',
     },
     function(err) {
         // client is connected
