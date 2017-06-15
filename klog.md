@@ -60,6 +60,44 @@ Operationally,
   ack when done.  Multi-process safe journal swapping is built into `qfputs`.
 * locally checkpointed line is synced to server after 10ms
 
+Sample Server
+----------------
+
+    var QFputs = require('qfputs');
+    var testlogWriter = new QFputs("testlog.log");
+
+    var klogServer = klog.createServer({
+        httpPort: 4244,
+        qrpcPort: 4245,
+        logs: {
+            // each log needs methods write() and fflush()
+            'Testlog': testlogWriter
+        }
+    },
+    function(err) {
+        // server is ready
+    });
+
+Sample Client
+----------------
+
+    var qlogger = require('qlogger');
+    var logger = new qlogger('info');
+
+    var klogClient = klog.createClient({
+        qrpcPort: 4245,
+            host: 'localhost',
+    },
+    function(err) {
+        // client is connected
+
+        logger.addWriter(klogClient);
+        logger.addWriter(process.stdout);
+
+        logger.info("testing");
+        // "testing\n" written to testlog.log and stdout
+    });
+
 Performance
 ----------------
 
@@ -135,10 +173,13 @@ Status
 Lessons Learned
 ----------------
 
+* 70 x speed differences are possible in the real world
+* 3.5k/s is standard nodejs "best practices" state of the art
 * understand your tools (eg request halves throughput)
 * standardization is not always a win
 * trust the libraries (bug was in the new code, not qbuffer)
 * rpc is great!
+
 * careful when benchmarking
   - 3-4gb files in a couple dozen seconds, a single test run
   - hard to measure file transport throughput
