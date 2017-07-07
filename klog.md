@@ -22,13 +22,13 @@ Objectives
 
 Log here, save there.  Or, `curl -d@log.sav http://server/log/write`
 
-* low latency with negligible overhead (existing services can use it to remote log)
-* high volume (to ship existing files in bulk)
-* robust (should not lose checkpointed loglines)
-* fault tolerant (should not require the remote to be always up)
+* Fast: low latency, low overhead, high throughput (usable to log directly to remote,
+  or to ship logs in bulk)
 * scriptable, usable from the command line (with `curl`)
 * multi-writer, multi-process safe (ok to share logfile)
 * convenient to use, can plug into existing loggers (`qlogger` writer)
+* durable (should not lose checkpointed loglines)
+* available, fault tolerant (should not require the remote to be always up)
 * the idea and approach date back to 2012 and earlier
 
 Results
@@ -48,7 +48,7 @@ Implementation
 
 * 500 lines of code, 2 mb of dependencies
 * client has 2 methods, `write` and `fflush`
-* server has 2 methods, `write` and `fflush`
+* server has 2 calls, `write` and `fflush` (also `/:log/write` and `/:log/fflush`)
 * each client talks to one server
 * each client logs to one remote logfile
 * one socket per client
@@ -62,6 +62,7 @@ Implementation
 * local staging journal supported, automatically uploads journal contents
 * the server provides the framework, but the actions are undefined.
   The test server appends to a local logfile, or just counts lines received.
+* binary safe, but batching relies on newline termination
 
 Operationally,
 
@@ -118,7 +119,7 @@ Measured the count of 200-byte newline terminated lines logged to the "remote"
 server (another process running on the same host).
 
 * up to 65 mb/s received and 45 mb/s persisted
-* 2x performance gain from faster packages (`request` is very slow)
+* 2x performance gain from swapping packages (`request` is very slow)
 * 20x throughput gain by also using a better protocol (one-way rpc vs http)
 * 60-90x performance gain by working with async batches in near-realtime
 
