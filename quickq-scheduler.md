@@ -39,7 +39,7 @@ Adding scheduling to quickq is done with a constructor option.
 
     var queueOptions = {
         concurrency: 10,          // default 10
-        scheduler: 'fair',        // default not scheduled
+        scheduler: 'fair',        // default unscheduled
         schedulerOptions: {
             maxTypeShare: 0.80,   // default 0.8
             maxScanLength: 1000,  // default 1000
