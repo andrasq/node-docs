@@ -1,7 +1,7 @@
 # The Art of Code Layout
 
-Notes on appearance and layout, by Andras Radics
-
+_Notes on appearance and layout, by Andras Radics_
+<br>
 _Oringinally appeared as [Coding Whitespace And Indentation](https://docs.google.com/document/d/1DcpiSSqlSjOJTYfWMWr5oE_xl-csc6GDS5Wp99b_czE/edit#heading=h.8ne0x98mwcfa), ca. 2013_
 
 
