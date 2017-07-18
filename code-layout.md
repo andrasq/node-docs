@@ -2,7 +2,7 @@
 
 Notes on appearance and layout, by Andras Radics
 
-_Oringinally appeared as [Coding Whitespace And Indentation](https://docs.google.com/document/d/1DcpiSSqlSjOJTYfWMWr5oE_xl-csc6GDS5Wp99b_czE/edit#heading=h.8ne0x98mwcfa)_
+_Oringinally appeared as [Coding Whitespace And Indentation](https://docs.google.com/document/d/1DcpiSSqlSjOJTYfWMWr5oE_xl-csc6GDS5Wp99b_czE/edit#heading=h.8ne0x98mwcfa), ca. 2013_
 
 
 Not only should code work correctly, it should present well.  Just like text, programs
@@ -69,7 +69,7 @@ Good whitespace hygiene avoids pointless diffs when reviewing changes in the cod
 
 
 Do not end the file with `?>`, that's asking for trouble.  PHP will automatically exit
-script mode when it reaches the end of the file, ?> is not necessary.  However, having
+script mode when it reaches the end of the file, `?>` is not necessary.  However, having
 `?>` followed by a hidden newline will emit the whitespace, possibly breaking the
 results.
 

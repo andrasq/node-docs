@@ -3,6 +3,7 @@ Nodejs Docs
 
 Collection of notes, observations, studies and writeups on nodejs.
 
+* 2017-07-18  [code-layout](code-layout.md) - thoughts on code layout
 * 2017-05-17  [quickq-scheduler](quickq-scheduler.md) - fair-share multi-tenant scheduling with `quickq`
 * 2017-05-10  [qtimeit](qtimeit.md) - benchmarking with `qtimeit`
 * 2017-04-19  [promises-guide](promises-guide.md) - quick reference guide to Promises
