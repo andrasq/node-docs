@@ -17,11 +17,11 @@ K&R style is one of the most widely adopted styles to deal with C's miscellaneou
 punctuation.
 
 
-- Words
-- Lines
-- Sentences
-- Paragraphs
-- Chapters
+- [Words](#words)
+- [Lines](#lines)
+- [Sentences](#sentences)
+- [Paragraphs](#paragraphs)
+- [Chapters](#chapters)
 
 
 ## Words
