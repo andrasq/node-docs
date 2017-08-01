@@ -34,23 +34,26 @@ eg: [1,2,3].map() vs async([1,2,3]).map()
 ## Avoid Freeloaders.  Make libraries pay their way.
 * each dependency is complexity that the next maintainer will have to master
 - do not use complex libraries for simple functions
-- vet and qualify the libraries before relying on them
+- vet and qualify libraries before relying on them
 - wrapper functionality to narrow the exposed api
 
 eg: `request` half the throughput of `http.request` or of a light-weight wrapper like `khttp`
 
 ## Avoid Confusion.  Aim for clarity.
 * write code for the future.  You won't remember it in two years, won't recognize what
-  it does, why, or how it works.  Save those 15 minutes detours, avoid over-clever
+  it does, why, or how it works.  Save those 15 minute detours, avoid over-clever
   approaches.  Do yourself a favor, make the code self-envident.
+* write code for the lowest common denominator.  Would it make sense to someone new to
+  the language?  New to the libraries used? New to programming?
 - take care when naming functions and variables
+- try to avoid introducing unnecessary variables and functions, they can add to the mental burden
 - choose the right function size, neither too large to comprehend nor too small to lose the forest
-- try to make code obvious both in intent and function
+- try to make code obvious in both function and intent
 - use comments to explain code that is not obvious.  Most functions will not need comments,
   but some functions will have 3x as many comment lines as code.  This is normal.
 
 ## Avoid Disruption.  Respect the code.
-* Don't rip apart the existing code, make your changes fit alongside.
+* Don't rip into the existing code, make your changes fit alongside.
 - stay in keeping with the existing style
 - do not jump after each new fad
 - do not introduce unnecessary diffs
