@@ -22,7 +22,7 @@ on what, but why:  it doesn't tell you what to do; it tells you what to avoid.
 
 eg: for loop vs forEach() vs recursion
 
-## Avoid Fancy Features.  Stay with the core.
+## Avoid Fancy Features.  Stay with the basics.
 - performance
 - wider skills base
 - most coders will not know every nuance of the language
@@ -52,39 +52,45 @@ eg: `request` half the throughput of `http.request` or of a light-weight wrapper
 - use comments to explain code that is not obvious.  Most functions will not need comments,
   but some functions will have 3x as many comment lines as code.  This is normal.
 
-## Avoid Disruption.  Respect the code.
-* Don't rip into the existing code, make your changes fit alongside.
 - stay in keeping with the existing style
 - do not jump after each new fad
+## Avoid Disruption.  Respect existing code.
+* Don't rip into the code, make your changes fit alongside.
 - do not introduce unnecessary diffs
+- avoid style over substance changes
 
-## Mind The Gap.  Decouple functionality.
+## Avoid Entanglements.  Decouple functionality.
 - isolate functionality into modules (classes)
 - make the coupling between modules explicit (dependency injection)
 - avoid monoliths
 - construct building blocks
 
-## avoid extra work (code for today, design for tomorrow)
-- do not implement optional features until needed
+## Avoid Make-Work.  Code for today, design for tomorrow.
+- do not put in unneeded features
 - 
 
-## make code testable
+## Avoid Surprises.  Write tests.
+- all functionality
+- all options
+- error handling
+- write small, focused functions that are easier to thoroughly test
+- pass in ("inject") dependencies to classes and functions, and test with mocks
+- 80% unit tests (modules), 20% integration tests (coupling)
+- do not assume that third-party libraries will not change.  Test the required invariants.
+
+## Avoid Pain.  Make code testable.
 * want to run all the code without actually performing any actions
 - wrap classes around functions
 - access helper functions as method calls
 - isolate side-effects into access functions
-
-## Avoid surprises.  Write tests.
-- all functionality
-- all options
-- error handling
 - expose classes, methods, and function to the unit tests
 - expose internal helper functions too
   - add them as class methods, or add a .getTestInspector() method to return them
 - expose helper classes
-- write small, focused functions that are easier to thoroughly test
-- pass in ("inject") dependencies to classes and functions, and test with mocks
-- 80% unit tests (modules), 20% integration tests (coupling)
 
-## test function libraries too
-- do not assume that third-party libraries will not change.  Test the required invariants.
+
+## References
+
+- W3C: 3.1 Solve real problems.  3.2 Priority:  User > Author > Implementer > Specifier > Theoretical Purity.
+
+- [W3C Design Principles](https://www.w3.org/TR/html-design-principles/#priority-of-constituencies)
