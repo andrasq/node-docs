@@ -3,7 +3,7 @@
 
 _(work in progress)_
 
-What follows are suggestions on how to write reliable, efficient code.  This is a
+What follow are suggestions on how to write reliable, maintainable code.  This is a
 different approach to coding style than what you might be used to.  The focus is not
 on what, but why:  it doesn't tell you what to do; it tells you what to avoid.
 
@@ -45,19 +45,19 @@ eg: `request` half the throughput of `http.request` or of a light-weight wrapper
   approaches.  Do yourself a favor, make the code self-envident.
 * write code for the lowest common denominator.  Would it make sense to someone new to
   the language?  New to the libraries used? New to programming?
-- take care when naming functions and variables
-- try to avoid introducing unnecessary variables and functions, they can add to the mental burden
-- choose the right function size, neither too large to comprehend nor too small to lose the forest
+- take time to choose good names for functions and variables
+- minimize clutter: avoid unnecessary variables and functions, they just add to the mental burden
+- right-size functions: neither too large to comprehend nor too small to lose the forest
 - try to make code obvious in both function and intent
 - use comments to explain code that is not obvious.  Most functions will not need comments,
   but some functions will have 3x as many comment lines as code.  This is normal.
+- avoid style over substance
 
-- stay in keeping with the existing style
-- do not jump after each new fad
 ## Avoid Disruption.  Respect existing code.
 * Don't rip into the code, make your changes fit alongside.
+- stay in keeping with the current style
+- do not jump after every latest fad, code is not a fashion show
 - do not introduce unnecessary diffs
-- avoid style over substance changes
 
 ## Avoid Entanglements.  Decouple functionality.
 - isolate functionality into modules (classes)
