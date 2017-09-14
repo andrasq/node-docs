@@ -16,7 +16,7 @@ on what, but why:  it doesn't tell you what to do; it tells you what to avoid.
 - faster to re-learn when worked on
 - easier to optimize
 - when you read your code a year from now, you'll feel 20 IQ points dumber,
-  and it won't make sense like it does now.  Write your code for that you.
+  and it won't make sense like it does now.  Write the code for that you.
 - iterate (not recurse, not use iterator, not sling arrays)
 - use variables, not argument vectors
 - do not rely on third-party libraries to implement three-line loops
@@ -50,7 +50,7 @@ eg: `request` half the throughput of `http.request` or of a light-weight wrapper
 ## Avoid Confusion.  Aim for clarity.
 * write code for the future.  You won't remember it in two years, won't recognize what
   it does, why, or how it works.  Save those 15 minute detours, avoid over-clever
-  approaches.  Do yourself a favor, make the code self-envident.
+  approaches.  Do yourself a favor, make the code self-evident.
 * write code for the lowest common denominator.  Would it make sense to someone new to
   the language?  New to the libraries used? New to programming?
 - take time to choose good names for functions and variables.
