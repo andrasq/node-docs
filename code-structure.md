@@ -4,8 +4,15 @@
 _(work in progress)_
 
 What follow are suggestions on how to write reliable, maintainable code.  This is a
-different approach to coding style than what you might be used to.  The focus is not
-on what, but why:  it doesn't tell you what to do; it tells you what to avoid.
+different approach to coding style than what you might be used to.  Instead of
+evangelism, fashion-think or turf-marking, the focus is not on what, but why:  advice
+on what makes code poor, and how to avoid it.
+
+The below insights from decades of software engineering are not brand new "best
+practices" cooked up for for the occasion.  Maybe contrarian, but if you view a 3 year
+old application not as obsolete but as having finally had time to discover and fix its
+more obvious bugs, this guide may be of interest.
+
 
 ## Avoid Complexity.  Keep it simple.
 - mental burden
@@ -19,7 +26,9 @@ on what, but why:  it doesn't tell you what to do; it tells you what to avoid.
   and it won't make sense like it does now.  Write the code for that you.
 - iterate (not recurse, not use iterator, not sling arrays)
 - use variables, not argument vectors
-- do not rely on third-party libraries to implement three-line loops
+- do not pull in complex libraries to implement simple functions.  Once in,
+  their more obscure features will also start creeping into the code, with every
+  maintainer responsible for knowing and understanding them all.
 - optimize only when useful, since optimization itself introduces complexity
 
 eg: for loop vs forEach() vs recursion
@@ -28,14 +37,16 @@ eg: for loop vs forEach() vs recursion
 ## Avoid Fancy Features.  Stay with the basics.
 - performance
 - wider skills base
+- more obvious
+- more widely compatible, less likely to change
 - most coders will not know every nuance of the language
 - the heart of the language is more likely to be efficient and glitch free
 
-eg: [1,2,3].forEach() vs async([1,2,3]).forEach() -- argument order not the same
+eg: `[1,2,3].forEach()` vs `async.forEach([1,2,3])` -- argument order not the same
 
-eg: [1,2,3].map() vs async([1,2,3]).map() -- argument order not the same
+eg: `[1,2,3].map()` vs `async.map([1,2,3])` -- argument order not the same
 
-eg: [{}].reverse() vs for (var i=0, j=a.length-1; i<j; i++, j--) { t = a[i]; a[i] = a[j]; a[j] = t } -- 100x faster to reverse array of objects with for loop
+eg: `[].reverse()` vs `for (var i=0, j=a.length-1; i<j; i++, j--) { t = a[i]; a[i] = a[j]; a[j] = t }` -- 100x faster to reverse array of objects with for loop
 
 
 ## Avoid Freeloaders.  Make libraries pay their way.
@@ -44,7 +55,7 @@ eg: [{}].reverse() vs for (var i=0, j=a.length-1; i<j; i++, j--) { t = a[i]; a[i
 - vet and qualify libraries before relying on them
 - wrapper functionality to narrow the exposed api
 
-eg: `request` half the throughput of `http.request` or of a light-weight wrapper like `khttp`
+eg: `request` half the throughput of `http.request` or [`khttp`](https://github.com/andrasq/node-k-http) (a light-weight wrapper)
 
 
 ## Avoid Confusion.  Aim for clarity.
@@ -70,7 +81,8 @@ eg: `request` half the throughput of `http.request` or of a light-weight wrapper
 * Don't rip into the code, make your changes fit alongside.
 - stay in keeping with the current style
 - do not jump after every latest fad, code is not a fashion show
-- do not introduce unnecessary diffs
+- do not introduce unnecessary changes
+- minimize diffs
 
 
 ## Avoid Entanglements.  Decouple functionality.
@@ -83,6 +95,7 @@ eg: `request` half the throughput of `http.request` or of a light-weight wrapper
 ## Avoid Make-Work.  Code for today.
 - do not put in unneeded features
 - easier to redesign tomorrow than to future-proof now
+- leave the code as clean and as complete as possible; assume it won't be revisited
 
 
 ## Avoid Surprises.  Write tests.
@@ -91,7 +104,7 @@ eg: `request` half the throughput of `http.request` or of a light-weight wrapper
 - error handling
 - write small, focused functions that are easier to thoroughly test
 - pass in ("inject") dependencies to classes and functions, and test with mocks
-- 80% unit tests (modules), 20% integration tests (coupling)
+- 90% unit tests (modules), 10% integration tests (coupling), end-to-end tests (full stack)
 - do not assume that third-party libraries will not change.  Test the required invariants.
 
 
