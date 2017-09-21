@@ -120,7 +120,8 @@ if the thenable rejects with a reson, `rejectHandler(reason)` is called.  In bot
 cases, the new promise will fulfill / resolve with the value (even `undefined`)
 returned by the handler function.  If the appropriate handler was not specified (or
 was not a function), the new promise takes on the state and value/reason of the
-thenable promise.
+thenable promise.  If the handler returns another promise, the thenable promise
+will take on the state and eventual value of the other promise.
 
 Caution: the new promise returned from `then` is _always_ _fulfilled_, even when the
 thenable promise rejects; the only time it is rejected is if the handler throws.  If
