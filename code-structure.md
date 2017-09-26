@@ -122,5 +122,5 @@ eg: `request` half the throughput of `http.request` or [`khttp`](https://github.
 ## References
 
 - W3C: 3.1 Solve real problems.  3.2 Priority:  User > Author > Implementer > Specifier > Theoretical Purity.
-
 - [W3C Design Principles](https://www.w3.org/TR/html-design-principles/#priority-of-constituencies)
+- [The Art of Code Layout](https://github.com/andrasq/node-docs/blob/master/code-layout.md)
