@@ -180,7 +180,7 @@ To convert a callbacked function into one that returns a promise:
         return function() {
             var args = Array.prototype.slice.call(arguments, 0);
             return new Promise(function executor(resolve, reject) {
-                args.push(function(err, ret) { err ? reject(err) : resolve(ret) });
+                args.push(function(err, ret) { if (err) throw err; else resolve(ret) });
                 callbackedFunction.apply(null, args);
             });
         }
