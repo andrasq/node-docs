@@ -1,5 +1,6 @@
 on eslint rules
 ===============
+2019-01-14 - AR.
 
 The eslint ruleset for our small team defines 264 rules over 889 lines.  That's a lot for a
 first stab.  The majority are inert "dark matter" and were not encountered.  Some have an
