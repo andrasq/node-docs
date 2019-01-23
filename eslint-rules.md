@@ -179,7 +179,7 @@ In combination with `no-confusing-arrow`, however, this results in a Catch-22:
 this is a partially thought through directive.  It might have a slightly useful intent, but
   ends up being mostly annoying clutter.  It aims to prevent usage errors by requiring the
   explicit parenthesization of binary operators instead of relying on the language built-in
-  precedence rules.  So 1 + 2 * 3 has to be written as `1 + (2 * 3)`.  But it also mandates
+  precedence rules.  So `1 + 2 * 3` has to be written as `1 + (2 * 3)`.  But it also mandates
   parentheses where not needed eg `1 + 2 - 3`, and misses other potential usage errors, eg
   `1 / 2 / 3` (1/6, but maybe wanted 1.5) This rule is not ready for prime time yet.
 
