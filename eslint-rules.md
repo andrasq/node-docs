@@ -229,9 +229,9 @@ only a matter for portability from Windows to Unix, safe on
   also run on Unix.
 
   Also, the rule only checks direct use of `__dirname` and `__filename`, not that the rest
-  of the path was constructed in a platform-neutral way.  No point.  In addition, nodejs
-  exports `path.sep`, the current platform-specific path separator ie `/`, which also has to
-  be concatenated.
+  of the path was constructed in a platform-neutral way.  In addition, nodejs exports
+  `path.sep`, the current platform-specific path separator ie `/`, which also has to be
+  concatenated.
 
         anchoredPath = path[0] === '/' ? path : __dirname + '/' + path;
 
@@ -307,7 +307,7 @@ No need.  This mis-named rule bans chained ternary
   expression, not a statement.  Javascript implements the expected left-to-right semantics,
   e.g.:
 
-        return (
+        print(
             n >= 1000 ? '' + n :
             n >= 100  ? '0' + n :
             n >= 10   ? '00' + n :
