@@ -33,6 +33,14 @@ normalizes spacing of function call arguments, but also affects
   spacing, eg `myFunction( arg1 ) { ... }` vs `myFunction(arg)`.  This also makes it easier to
   search for the function definition with file utils or in a text editor.
 
+  It also bans spaces used to align layout for legibility, eg
+
+        checksum =
+            ((value >> 24) & 0xFF) ^
+            ((value >> 16) & 0xFF) ^
+            ((value >>  8) & 0xFF) ^
+            ((value >>   ) & 0xFF);
+
 ### `array-bracket-spacing`
 [cosmetic]
 inconsistent, doesn't match how `{}` objects are laid out.
@@ -355,3 +363,17 @@ requires accessing properties by dotted name.  However, it also
 
         req.headers['Content-Type'] = 'application/json';         // permitted
         req.headers['Authorization'] = 'Basic';                   // banned
+
+### `no-bitwise`
+[broken]
+Some operations are naturally expressed with bitwise operations, eg data packing, base64
+encoding, etc.  A global ban on them mandates that no such code will ever be written, which is
+short-sighted.  Also, the bitwise operations are faster then their numeric equivalents, and are
+a tool to strength-reduce more costly operators (eg exponentiation).  They also have different,
+sometimes more useful semantics (truncation, unsigned int opno sign extension, etc).
+
+        byte = bits & 0xFF;                     // fast, intuitive form
+        signMask = bits & 0x80;
+
+        byte = Math.floor(bits % 256);          // mandated form
+        signMask = Math.floor(sign / 128) * 128;
