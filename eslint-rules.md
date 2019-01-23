@@ -317,7 +317,7 @@ No need.  This mis-named rule bans chained ternary
 ### `no-unneeded-ternary`
 [broken]
 This linting rule is misguided.  It bans the use of a ternary expression to assign a boolean
-value, requiring a workaround such as casting Boolean or double-negation `!!`.  The docs
+value, requiring a workaround such as casting to Boolean or double-negation `!!`.  The docs
 suggests assigning the tested condition instead, but that changes the semantics when the
 conditional evaluates to truthy not boolean.  Conditional assignment is a clearer, more
 direct construct whose meaning is immediately obvious.
@@ -329,14 +329,14 @@ direct construct whose meaning is immediately obvious.
   Every ternary expression can be converted to one using boolean `||` and `&&`, but not
   always for the better.  And every conditional can be wrapped in a function that returns a
   boolean, but that's just unneeded clutter. Also, this rule is weak at detecting truly
-  unneeded conditionals, it only bans assigning booleans.
+  unneeded ternaries, it only bans assigning booleans.
 
 ### `func-call-spacing`
 [cosmetic]
 bans a space between the function name and the following
-  parentheses.  Api's that introduce English keywords, eg `mocha`, scan better with an added
+  parentheses.  API's that introduce English keywords, eg `mocha`, scan better with an added
   space after the function name, similarly to how they looked in CoffeeScript.  Eg `describe
-  ('section'` and `it ('should'` instead of `describe('section'` and `it('should'`.  Apis that
+  ('section'` and `it ('should'` instead of `describe('section'` and `it('should'`.  API's that
   expose methods are well spaced by the `.` property separator.  More broadly, I've not seen
   this ever be an issue (unlike omitting the space after keywords like `if` or `while`).
 
