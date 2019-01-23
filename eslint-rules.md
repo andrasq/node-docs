@@ -159,10 +159,13 @@ this is a well-meaning and seemingly reasonable rule to prevent accidental
   workarounds are verbose and awkward (copy-in from shadow variables), obscure (extract from
   `arguments`), or inefficienet (pass hashes).
 
-  The rule is also often pointless; in functions that take optional arguments it fails in
-  its purpose.  E.g., given `(_arg) => { arg = _arg; ... }` the internal name and all access
-  will be to `arg`, not `_arg`.  Since `arg` is not guarded, an unintentional modification
-  to `arg` will break the code the same as without this rule.
+  On the face of it the rule is also often pointless; in functions that take optional
+  arguments it fails in its purpose.  E.g., given `(_arg) => { arg = _arg; ... }` the
+  internal name and all access will be to `arg`, not `_arg`.  Since `arg` is not guarded, an
+  unintentional modification to `arg` will break the code the same as without this rule.
+
+  Upon reflection, this rule makes sense if the intent is to manually override it for
+  remapping optional args, and _then_ prevent modifications.  On its own, it fails.
 
 ### `arrow-body-style`
 [broken]
