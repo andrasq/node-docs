@@ -370,7 +370,7 @@ Some operations are naturally expressed with bitwise operations, eg data packing
 encoding, etc.  A global ban on them mandates that no such code will ever be written, which is
 short-sighted.  Also, the bitwise operations are faster then their numeric equivalents, and are
 a tool to strength-reduce more costly operators (eg exponentiation).  They also have different,
-sometimes more useful semantics (truncation, unsigned int opno sign extension, etc).
+sometimes more useful semantics (truncation, unsigned int ops, no sign extension, etc).
 
         byte = bits & 0xFF;                     // fast, intuitive form
         signMask = bits & 0x80;
