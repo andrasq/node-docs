@@ -39,7 +39,7 @@ normalizes spacing of function call arguments, but also affects
             ((value >> 24) & 0xFF) ^
             ((value >> 16) & 0xFF) ^
             ((value >>  8) & 0xFF) ^
-            ((value >>   ) & 0xFF);
+            ((value      ) & 0xFF);
 
 ### `array-bracket-spacing`
 [cosmetic]
@@ -134,7 +134,7 @@ string concatenation is often clearer than concatenating with
         path += '/';
 
 ### `arrow-parens`
-[cometic]
+[cosmetic]
 Arrow functions are a shorthand for defining anonymous bound functions.
   They have rather loose definition syntax; it helps to always parenthesize the parameter list to help identify
   them as functions.
