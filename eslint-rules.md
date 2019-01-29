@@ -154,9 +154,9 @@ Arrow functions are a shorthand for defining anonymous bound functions.
 
 ### `no-array-constructor`
 [broken]
-under some circumstances `new Array()` is much faster than
-  `[]`.  The specifics seem to vary from node version to node version, but in general
-  arrays that will be extended prefer being constructed with `new`.
+under some circumstances arrays constructed with `new Array()` work much faster than
+with `[]`.  The specifics seem to vary from node version to node version, but in general
+arrays that will be extended prefer being constructed with `new`.
 
 ### `no-param-reassign`
 [broken]
@@ -180,7 +180,7 @@ this is a well-meaning and seemingly reasonable rule to prevent accidental
 this rule bans "unnecessary" braces around arrow-function bodies.
 In combination with `no-confusing-arrow`, however, this results in a Catch-22:
   - "no-confusing-arrow:error" bans `(a) => a < 1`, wants braces around the conditional
-  - "arrow-body-style:as-needed" bans `(a) => { a < 1 }` one-liner function body
+  - "arrow-body-style:as-needed" bans `(a) => { return a < 1 }` one-liner function braces
 
 ### `no-mixed-operators`
 [broken]
