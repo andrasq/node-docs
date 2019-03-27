@@ -2,7 +2,7 @@ on eslint rules
 ===============
 2019-01-14 - AR.
 
-The eslint ruleset for our small team defines 264 rules over 889 lines.  That's a lot for a
+The eslint ruleset for our small team defines 264 rules over 889 lines (188 active).  That's a lot for a
 first stab.  The majority are inert "dark matter" and were not encountered.  Some have an
 obvious role and can be worked around, others are run into all the time and just get in the
 way.
@@ -181,6 +181,7 @@ this rule bans "unnecessary" braces around arrow-function bodies.
 In combination with `no-confusing-arrow`, however, this results in a Catch-22:
   - "no-confusing-arrow:error" bans `(a) => a < 1`, wants braces around the conditional
   - "arrow-body-style:as-needed" bans `(a) => { return a < 1 }` one-liner function braces
+  - "prefer-arrow-callback" bans using `function(a) { return a < 1 }` instead.
 
 ### `no-mixed-operators`
 [broken]
