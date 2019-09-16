@@ -198,7 +198,7 @@ maybe a bit of displaced anti-goto zeal, but banning `continue`
   statements while allowing mid-loop `break` and allowing -- nay, encouraging -- mid-function
   early `return` is plain silly: they're all the same.  Each of them means "I'm done
   here, on to the next", and used as such is perfectly clear and easy to follow.  Each can
-  be coded around by using more levels of it-else.  In addition, if the loop body is converted
+  be coded around by using more levels of if-else.  In addition, if the loop body is converted
   to a function, the `continue` can be replaced with `return` which is permitted.  E.g.:
 
         for (item of dataItems) {
