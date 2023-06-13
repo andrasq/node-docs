@@ -82,8 +82,6 @@ eg: `request` half the throughput of `http.request` or [`khttp`](https://github.
 - avoid unnecessary variables and functions, they add to the mental burden
 - smaller is simpler
 - special cases add delays and complexity
-- solve the problem at hand, tomorrow's feature is today's baggage
-- easier to rewrite later than to future-proof now
 
 
 ## Avoid Disruption.  Respect existing code.
@@ -102,8 +100,8 @@ eg: `request` half the throughput of `http.request` or [`khttp`](https://github.
 
 
 ## Avoid Make-Work.  Code for today.
-- do not put in unneeded features
-- easier to redesign tomorrow than to future-proof now
+- solve the problem at hand, tomorrow's feature is today's baggage
+- easier to rewrite tomorrow than to future-proof now
 - leave the code as clean and as complete as possible; assume it won't be revisited
 
 
