@@ -69,12 +69,21 @@ eg: `request` half the throughput of `http.request` or [`khttp`](https://github.
   - UPPER_CASE_CONSTANT - for class or file constants
   - camelCaseName - variables, functions, methods
   - CapitalizedClass - classes, typedefs
-- minimize clutter: avoid unnecessary variables and functions, they just add to the mental burden
 - right-size functions: neither too large to comprehend nor too small to lose the forest
-- try to make code obvious in both function and intent
+- make code obvious in both function and intent
+- choose names so as to make reading the lines tell the story
+- find good seams to create subsystems that minimize information shuttling
 - use comments to explain code that is not obvious.  Most functions will not need comments,
   but some functions will have 3x as many comment lines as code.  This is normal.
 - avoid style over substance
+
+
+## Avoid Clutter.  Make every line count.
+- avoid unnecessary variables and functions, they add to the mental burden
+- smaller is simpler
+- special cases add delays and complexity
+- solve the problem at hand, tomorrow's feature is today's baggage
+- easier to rewrite later than to future-proof now
 
 
 ## Avoid Disruption.  Respect existing code.
@@ -99,9 +108,11 @@ eg: `request` half the throughput of `http.request` or [`khttp`](https://github.
 
 
 ## Avoid Surprises.  Write tests.
-- all functionality
-- all options
-- error handling
+- test all advertised functionality
+- test all options
+- test error handling
+- test the expected uses cases
+- think about and test likely unexpected use cases
 - write small, focused functions that are easier to thoroughly test
 - pass in ("inject") dependencies to classes and functions, and test with mocks
 - 90% unit tests (modules), 10% integration tests (coupling), end-to-end tests (full stack)
