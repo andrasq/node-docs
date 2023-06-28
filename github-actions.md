@@ -34,22 +34,6 @@ Github actions are automatically enabled by the presence of a YAML file in the p
               node-version: ${{ matrix.nodeVersion }}
           - run: npm install
           - run: npm test
-          - env:
-            passed: yes
-      coverage:
-        runs-on: ubuntu-latest
-        if: ${{ $passed == 'yes' }}
-        steps:
-          - uses: actions/checkout@v3
-          - uses: actions/setup-node@v3
-            with:
-              node-version: '5.8.0'
-          - run: npm install -g nyc
-          - run: npm install
-          - run: nyc -r lcov -r text npm test
-          - uses: coverallsapp/github-action@v1.1.2
-            with:
-              github-token: ${{ github.token }}
 
 ## name:
 
@@ -58,6 +42,10 @@ contain spaces; the workflow name shows up in the dashboards and on the badge.  
 because that's what I want on the badge.
 
     name: build
+
+## env:
+
+Process environment variables can be set and tested in the workflow, job, or steps.
 
 ## on:
 
