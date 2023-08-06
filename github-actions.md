@@ -71,7 +71,7 @@ call `test`
 
 The strategy section can specify the `matrix` of parameters to test with.  We want to test with
 multiple versions of Node.js, which we list in a field we call `nodeVersions`.  The field name is
-arbitrary, but has to match the `{{ matrix.nodeVersion }}` reference below in the script.
+arbitrary, but has to match the `{{ matrix.nodeVersion }}` references below in the script.
 
 Technical aside: the workflow steps will be run for each tuple in the cross-product of the arrays
 in the matrix.  We have a single array `nodeVersion`, but if we added `os: [ linux, mac ]` then the
@@ -80,7 +80,7 @@ steps would run for `6,linux`, `6,mac`, `8,linux`, `8,mac`, etc.
 Careful with the versions, yaml converts them to numbers whenever possible, so `16.10` becomes the
 numeric `16.1` which is an older version.  Either quote ambiguous numbers `'16.10'` or make them
 non-numeric `16.10.x` (the `.x` will be replaced with the highest available patch version, which
-is how `'16.10'` is also interpreted):
+is also how `'16.10'` is interpreted):
 
     strategy:
       matrix:
@@ -119,9 +119,9 @@ will not be run and will be grayed out in the test results dashboard.
           node-version: ${{ matrix.nodeVersion }}
       - run: npm install
       - run: npm test
-      - run: npm run new-node-tests
-        name: additional tests that need a newer node
+      - name: additional tests that need a newer node
         if: ${{ matrix.nodeVersion >= 12 }}
+        run: npm run new-node-tests
 
 (Technical aside:  YAML builds objects from groups of colon-words, and arrays from groups of
 dash-prefix items.  In the workflow `steps` is an array of objects, each object with a property
@@ -130,6 +130,13 @@ dash-prefix items.  In the workflow `steps` is an array of objects, each object 
 ## uses:
 
 `uses:` steps invoke github library functions.
+
+## with:
+
+Parameters to test with.  Parameters can be hardcoded or can refer to entries in the matrix.  A
+separate separate test is run for each parameter combination from the matrix (above we care about
+just the `node-version`, but we could add `os:` and others).  The `node-version`, `os` and other
+names are special, they tells github what environment and tooling to install.
 
 ## run:
 
@@ -150,7 +157,7 @@ Github generates an SVG badge as a result of the workflow run.  The badge can be
 built from the repo, project and workflow-file names.
 
     baseUrl = https://github.com/{repo}/{project}/actions/workflows/{yaml}
-    [![Build Status]({baseUrl}/badge.svg)]({baseUrl}.yml)
+    [![Build Status]({baseUrl}/badge.svg)]({baseUrl})
 
 * repo - the github account name
 * project - the project repository name
