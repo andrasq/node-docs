@@ -134,7 +134,7 @@ dash-prefix items.  In the workflow `steps` is an array of objects, each object 
 ## with:
 
 Parameters to test with.  Parameters can be hardcoded or can refer to entries in the matrix.  A
-separate separate test is run for each parameter combination from the matrix (above we care about
+separate test is run for each parameter combination from the matrix (above we care about
 just the `node-version`, but we could add `os:` and others).  The `node-version`, `os` and other
 names are special, they tells github what environment and tooling to install.
 
